@@ -1,21 +1,41 @@
 $(document).ready(function() {
     
     // 1. ИНИЦИАЛИЗАЦИЯ И LOCALSTORAGE
-    // Пытаемся достать данные из памяти браузера. Если там пусто - загружаем дефолтные.
+    // Большой реалистичный массив данных для презентации
     let defaultData = [
+        // Звук
         { id: 101, name: "Радиомикрофон Shure SM58", category: "Звук", desc: "База + 2 микрофона", qty: 12, status: "На складе" },
-        { id: 102, name: "Проектор Epson EB-X41", category: "Видео", desc: "В кейсе, с пультом", qty: 3, status: "На мероприятии" },
-        { id: 103, name: "Баннер Roll-up 2х0.8м", category: "Декорации", desc: "Каркас без полотна", qty: 15, status: "На складе" },
-        { id: 104, name: "LED-прожектор RGB", category: "Свет", desc: "Нужна замена кабеля", qty: 8, status: "В ремонте" }
+        { id: 102, name: "Цифровой микшер Behringer X32", category: "Звук", desc: "В жестком кейсе", qty: 2, status: "На мероприятии" },
+        { id: 103, name: "Активная колонка JBL EON615", category: "Звук", desc: "Со стойками и кабелями", qty: 6, status: "На складе" },
+        
+        // Видео
+        { id: 104, name: "Проектор Epson EB-X41", category: "Видео", desc: "В кейсе, с пультом", qty: 3, status: "В ремонте" },
+        { id: 105, name: "Плазменная панель Samsung 65'", category: "Видео", desc: "Напольная стойка в комплекте", qty: 4, status: "На складе" },
+        { id: 106, name: "LED-экран кабинет 500х500", category: "Видео", desc: "Шаг пикселя P3.91", qty: 40, status: "На мероприятии" },
+        { id: 107, name: "Видеомикшер Blackmagic ATEM", category: "Видео", desc: "Для онлайн-трансляций", qty: 1, status: "На складе" },
+        
+        // Свет
+        { id: 108, name: "LED-прожектор RGB PAR", category: "Свет", desc: "Архитектурная подсветка", qty: 24, status: "На складе" },
+        { id: 109, name: "Световая голова Beam 230W", category: "Свет", desc: "В двойных кейсах", qty: 12, status: "На мероприятии" },
+        { id: 110, name: "Генератор тяжелого дыма", category: "Свет", desc: "Жидкость залита на 50%", qty: 2, status: "На складе" },
+        { id: 111, name: "DMX-пульт GrandMA2", category: "Свет", desc: "Основной пульт управления", qty: 1, status: "В ремонте" },
+        
+        // Декорации
+        { id: 112, name: "Баннер Roll-up 2х0.8м", category: "Декорации", desc: "Каркас без полотна", qty: 15, status: "На складе" },
+        { id: 113, name: "Красная ковровая дорожка", category: "Декорации", desc: "Длина 10 метров, ширина 2м", qty: 3, status: "На складе" },
+        { id: 114, name: "Стойка ограждения (золото)", category: "Декорации", desc: "С красным бархатным канатом", qty: 20, status: "На мероприятии" },
+        { id: 115, name: "Конструкция для Press-wall", category: "Декорации", desc: "Трубы Joker (3x2 м)", qty: 5, status: "На складе" },
+        { id: 116, name: "Подиум сценический 2х1м", category: "Декорации", desc: "Высота ножек 40 см", qty: 18, status: "На мероприятии" }
     ];
 
-    let inventory = JSON.parse(localStorage.getItem('crm_inventory')) || defaultData;
-    let nextId = parseInt(localStorage.getItem('crm_nextId')) || 105;
+    // Я добавил суффикс _v2, чтобы браузер понял, что это новое сохранение
+    let inventory = JSON.parse(localStorage.getItem('crm_inventory_v2')) || defaultData;
+    let nextId = parseInt(localStorage.getItem('crm_nextId_v2')) || 117;
 
     // Функция сохранения данных в память браузера
     function saveDataToStorage() {
-        localStorage.setItem('crm_inventory', JSON.stringify(inventory));
-        localStorage.setItem('crm_nextId', nextId.toString());
+        localStorage.setItem('crm_inventory_v2', JSON.stringify(inventory));
+        localStorage.setItem('crm_nextId_v2', nextId.toString());
     }
 
     // 2. ОТРИСОВКА ИНТЕРФЕЙСА
