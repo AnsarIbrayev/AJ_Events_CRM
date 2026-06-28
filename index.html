@@ -37,7 +37,7 @@
             <div class="col-md-4">
                 <div class="card brand-card-blue text-white mb-3 shadow-sm border-0">
                     <div class="card-body">
-                        <h5 class="card-title opacity-75">Всего позиций</h5>
+                        <h5 class="card-title opacity-75">Всего вещей на балансе</h5>
                         <h2 id="totalItems" class="fw-bold">0</h2>
                     </div>
                 </div>
@@ -45,7 +45,7 @@
             <div class="col-md-4">
                 <div class="card brand-card-gold text-white mb-3 shadow-sm border-0">
                     <div class="card-body">
-                        <h5 class="card-title opacity-75">На складе (Доступно)</h5>
+                        <h5 class="card-title opacity-75">Доступно на складе</h5>
                         <h2 id="availableItems" class="fw-bold">0</h2>
                     </div>
                 </div>
@@ -61,13 +61,11 @@
                 <div class="col-md-3">
                     <select id="filterCategory" class="form-select">
                         <option value="All">Все категории</option>
-                        <!-- Будет заполняться автоматически -->
                     </select>
                 </div>
                 <div class="col-md-3">
                     <select id="filterStatus" class="form-select">
                         <option value="All">Все статусы</option>
-                        <!-- Будет заполняться автоматически -->
                     </select>
                 </div>
                 <div class="col-md-3 text-end">
@@ -82,7 +80,7 @@
         <div class="card shadow-sm border-0 bg-body">
             <div class="card-body p-0 table-responsive">
                 <table class="table table-hover mb-0 align-middle">
-                    <thead class="table-light">
+                    <thead class="custom-thead">
                         <tr>
                             <th>№</th>
                             <th>Наименование</th>
@@ -117,7 +115,7 @@
                             <input type="text" class="form-control" id="itemName" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label text-muted small fw-bold text-uppercase">Категория (Выберите или впишите свою)</label>
+                            <label class="form-label text-muted small fw-bold text-uppercase">Категория (Выберите или впишите)</label>
                             <input type="text" class="form-control" id="itemCategory" list="categoryList" placeholder="Например: Мебель" required>
                             <datalist id="categoryList"></datalist>
                         </div>

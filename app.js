@@ -23,7 +23,7 @@ $(document).ready(function() {
     }
 
     // --------------------------------------------------
-    // 2. ИНИЦИАЛИЗАЦИЯ ДАННЫХ
+    // 2. ИНИЦИАЛИЗАЦИЯ БОЛЬШОЙ БАЗЫ ДАННЫХ (25 ВЕЩЕЙ)
     // --------------------------------------------------
     let defaultData = [
         { id: 104, name: "Проектор Epson EB-X41", category: "Видео", desc: "В кейсе, с пультом", qty: 3, status: "В ремонте" },
@@ -36,45 +36,77 @@ $(document).ready(function() {
         { id: 111, name: "DMX-пульт GrandMA2", category: "Свет", desc: "Основной пульт управления", qty: 1, status: "В ремонте" },
         { id: 113, name: "Красная ковровая дорожка", category: "Декорации", desc: "Длина 10 метров, ширина 2м", qty: 3, status: "На складе" },
         { id: 102, name: "Цифровой микшер Behringer X32", category: "Звук", desc: "В жестком кейсе", qty: 2, status: "На мероприятии" },
-        { id: 108, name: "LED-прожектор RGB PAR", category: "Свет", desc: "Архитектурная подсветка", qty: 24, status: "На складе" }
+        { id: 108, name: "LED-прожектор RGB PAR", category: "Свет", desc: "Архитектурная подсветка", qty: 24, status: "На складе" },
+        { id: 116, name: "Подиум сценический 2х1м", category: "Декорации", desc: "Высота ножек 40 см", qty: 18, status: "На мероприятии" },
+        { id: 105, name: "Плазменная панель Samsung 65'", category: "Видео", desc: "Напольная стойка в комплекте", qty: 4, status: "На складе" },
+        { id: 110, name: "Генератор тяжелого дыма", category: "Спецэффекты", desc: "Жидкость залита на 50%", qty: 2, status: "На складе" },
+        { id: 107, name: "Видеомикшер Blackmagic ATEM", category: "Видео", desc: "Для онлайн-трансляций", qty: 1, status: "На складе" },
+        { id: 114, name: "Стойка ограждения (золото)", category: "Декорации", desc: "С красным бархатным канатом", qty: 20, status: "На мероприятии" },
+        { id: 117, name: "Лазерная установка RGB 3W", category: "Свет", desc: "Управление через ILDA", qty: 2, status: "На складе" },
+        { id: 118, name: "Микрофонная стойка K&M", category: "Звук", desc: "Журавль, черная", qty: 10, status: "На мероприятии" },
+        { id: 119, name: "Генератор мыльных пузырей", category: "Спецэффекты", desc: "Требует чистки", qty: 1, status: "На складе" },
+        { id: 120, name: "Пушка конфетти", category: "Спецэффекты", desc: "Без баллонов СО2", qty: 4, status: "В ремонте" },
+        { id: 121, name: "Радиосистема Sennheiser EW 100", category: "Звук", desc: "Петличный микрофон", qty: 5, status: "На складе" },
+        { id: 122, name: "Кабель HDMI 20 метров", category: "Коммутация", desc: "Оптический HDMI", qty: 8, status: "На мероприятии" },
+        { id: 123, name: "Силовой удлинитель 50м", category: "Коммутация", desc: "На катушке", qty: 3, status: "На складе" },
+        { id: 124, name: "Световая голова Wash 19x15W", category: "Свет", desc: "Заливочный свет", qty: 8, status: "На складе" },
+        { id: 125, name: "Суфлер для спикера", category: "Видео", desc: "С монитором 24 дюйма", qty: 1, status: "На складе" }
     ];
 
-    let inventory = JSON.parse(localStorage.getItem('crm_inventory_v5')) || defaultData;
-    let nextId = parseInt(localStorage.getItem('crm_nextId_v5')) || 117;
+    // Ключ _v6, чтобы загрузить новую большую базу!
+    let inventory = JSON.parse(localStorage.getItem('crm_inventory_v6')) || defaultData;
+    let nextId = parseInt(localStorage.getItem('crm_nextId_v6')) || 126;
 
     function saveDataToStorage() {
-        localStorage.setItem('crm_inventory_v5', JSON.stringify(inventory));
-        localStorage.setItem('crm_nextId_v5', nextId.toString());
-        updateDynamicLists(); // Пересобираем фильтры при сохранении
+        localStorage.setItem('crm_inventory_v6', JSON.stringify(inventory));
+        localStorage.setItem('crm_nextId_v6', nextId.toString());
+        updateDynamicLists(); 
     }
 
     // --------------------------------------------------
-    // 3. ДИНАМИЧЕСКИЕ КАТЕГОРИИ И СТАТУСЫ
+    // 3. АЛГОРИТМ ПРИКОЛЬНЫХ ЦВЕТОВ ДЛЯ НОВЫХ СТАТУСОВ
+    // --------------------------------------------------
+    function getStatusBadge(status) {
+        // Стандартные статусы
+        if (status === 'На складе') return '<span class="badge bg-success">На складе</span>';
+        if (status === 'На мероприятии') return '<span class="badge bg-warning text-dark">На мероприятии</span>';
+        if (status === 'В ремонте') return '<span class="badge bg-danger">В ремонте</span>';
+
+        // Генерация цвета на основе текста (хеширование)
+        let hash = 0;
+        for (let i = 0; i < status.length; i++) {
+            hash = status.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        // У нас 5 кастомных цветов (от 0 до 4) в style.css
+        let colorIndex = Math.abs(hash) % 5; 
+        
+        return `<span class="badge badge-custom-${colorIndex}">${status}</span>`;
+    }
+
+    // --------------------------------------------------
+    // 4. ДИНАМИЧЕСКИЕ КАТЕГОРИИ И СТАТУСЫ
     // --------------------------------------------------
     function updateDynamicLists() {
         let categories = new Set();
         let statuses = new Set();
         
-        // Система сама изучает базу и находит все возможные статусы и категории
         inventory.forEach(item => {
             if(item.category) categories.add(item.category);
             if(item.status) statuses.add(item.status);
         });
 
-        // Заполняем подсказки (datalist) в форме добавления
         $('#categoryList').empty();
         categories.forEach(c => $('#categoryList').append(`<option value="${c}">`));
 
         $('#statusList').empty();
         statuses.forEach(s => $('#statusList').append(`<option value="${s}">`));
 
-        // Заполняем фильтры над таблицей
         let currentCat = $('#filterCategory').val();
         let currentStat = $('#filterStatus').val();
 
         $('#filterCategory').empty().append('<option value="All">Все категории</option>');
         categories.forEach(c => $('#filterCategory').append(`<option value="${c}">${c}</option>`));
-        $('#filterCategory').val(currentCat || "All"); // Возвращаем выбор
+        $('#filterCategory').val(currentCat || "All"); 
 
         $('#filterStatus').empty().append('<option value="All">Все статусы</option>');
         statuses.forEach(s => $('#filterStatus').append(`<option value="${s}">${s}</option>`));
@@ -82,7 +114,7 @@ $(document).ready(function() {
     }
 
     // --------------------------------------------------
-    // 4. ОТРИСОВКА ТАБЛИЦЫ
+    // 5. ОТРИСОВКА ТАБЛИЦЫ
     // --------------------------------------------------
     function renderTable(data) {
         let tbody = $('#inventoryTable');
@@ -94,13 +126,7 @@ $(document).ready(function() {
         }
 
         data.forEach(function(item, index) { 
-            // Стандартные статусы цветные, кастомные (новые) будут серыми бейджами
-            let statusBadge = '';
-            if (item.status === 'На складе') statusBadge = '<span class="badge bg-success">На складе</span>';
-            else if (item.status === 'На мероприятии') statusBadge = '<span class="badge bg-warning text-dark">На мероприятии</span>';
-            else if (item.status === 'В ремонте') statusBadge = '<span class="badge bg-danger">В ремонте</span>';
-            else statusBadge = `<span class="badge bg-secondary">${item.status}</span>`;
-
+            let statusBadge = getStatusBadge(item.status); // Вызов алгоритма цвета
             let description = item.desc ? item.desc : '<span class="text-muted">-</span>';
 
             let row = `
@@ -130,7 +156,7 @@ $(document).ready(function() {
     }
 
     // --------------------------------------------------
-    // 5. ФИЛЬТРАЦИЯ
+    // 6. ФИЛЬТРАЦИЯ
     // --------------------------------------------------
     function applyFilters() {
         let searchText = $('#searchInput').val().toLowerCase();
@@ -153,7 +179,7 @@ $(document).ready(function() {
     $('#filterCategory, #filterStatus').on('change', applyFilters);
 
     // --------------------------------------------------
-    // 6. ДОБАВЛЕНИЕ И РЕДАКТИРОВАНИЕ
+    // 7. ДОБАВЛЕНИЕ И РЕДАКТИРОВАНИЕ
     // --------------------------------------------------
     $('#openAddModalBtn').click(function() {
         $('#modalTitle').text('Новое оборудование');
@@ -181,7 +207,7 @@ $(document).ready(function() {
     $('#saveItemBtn').click(function() {
         let id = $('#itemId').val();
         let name = $('#itemName').val();
-        let category = $('#itemCategory').val().trim(); // Убираем лишние пробелы
+        let category = $('#itemCategory').val().trim(); 
         let desc = $('#itemDesc').val();
         let qty = $('#itemQty').val();
         let status = $('#itemStatus').val().trim();
@@ -221,7 +247,7 @@ $(document).ready(function() {
     });
 
     // --------------------------------------------------
-    // 7. УДАЛЕНИЕ
+    // 8. УДАЛЕНИЕ
     // --------------------------------------------------
     $('#inventoryTable').on('click', '.delete-btn', function() {
         if (confirm("Удалить позицию навсегда?")) {
