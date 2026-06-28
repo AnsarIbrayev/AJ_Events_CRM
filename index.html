@@ -21,7 +21,7 @@
                 <span class="navbar-text text-white me-3">
                     Менеджер: Ансар
                 </span>
-                <button class="btn btn-outline-light btn-sm" id="themeToggle" title="Сменить тему">
+                <button class="btn btn-outline-light btn-sm rounded-circle" id="themeToggle" title="Сменить тему" style="width: 32px; height: 32px;">
                     <i class="fa-solid fa-moon"></i>
                 </button>
             </div>
@@ -35,41 +35,60 @@
         <!-- Статистика -->
         <div class="row mb-4">
             <div class="col-md-4">
-                <div class="card brand-card-blue text-white mb-3 shadow-sm border-0">
-                    <div class="card-body">
+                <div class="card brand-card-blue text-white mb-3 shadow-sm custom-rounded border-0 card-hover">
+                    <div class="card-body p-4">
                         <h5 class="card-title opacity-75">Всего вещей на балансе</h5>
-                        <h2 id="totalItems" class="fw-bold">0</h2>
+                        <h2 id="totalItems" class="fw-bold mb-0 display-5">0</h2>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card brand-card-gold text-white mb-3 shadow-sm border-0">
-                    <div class="card-body">
+                <div class="card brand-card-gold text-white mb-3 shadow-sm custom-rounded border-0 card-hover">
+                    <div class="card-body p-4">
                         <h5 class="card-title opacity-75">Доступно на складе</h5>
-                        <h2 id="availableItems" class="fw-bold">0</h2>
+                        <h2 id="availableItems" class="fw-bold mb-0 display-5">0</h2>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Управление таблицей и ФИЛЬТРЫ -->
-        <div class="card shadow-sm mb-3 border-0 bg-body">
-            <div class="card-body row align-items-center g-2">
+        <div class="card shadow-sm mb-4 border-0 bg-body custom-rounded">
+            <div class="card-body row align-items-center g-3 p-4">
                 <div class="col-md-3">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Поиск по названию...">
+                    <input type="text" id="searchInput" class="form-control rounded-pill px-4" placeholder="Поиск по названию...">
                 </div>
+                
+                <!-- Анимированный кастомный фильтр категорий -->
                 <div class="col-md-3">
-                    <select id="filterCategory" class="form-select">
-                        <option value="All">Все категории</option>
-                    </select>
+                    <div class="dropdown w-100">
+                        <button class="btn btn-light w-100 text-start d-flex justify-content-between align-items-center rounded-pill px-4 shadow-sm custom-select-btn" type="button" data-bs-toggle="dropdown" id="catBtn">
+                            <span id="catText">Все категории</span>
+                            <i class="fa-solid fa-chevron-down text-muted small"></i>
+                        </button>
+                        <ul class="dropdown-menu w-100 shadow-lg border-0 custom-dropdown-menu dropdown-anim" id="filterCategoryMenu">
+                            <!-- Сюда добавятся категории -->
+                        </ul>
+                    </div>
+                    <input type="hidden" id="filterCategory" value="All">
                 </div>
+
+                <!-- Анимированный кастомный фильтр статусов -->
                 <div class="col-md-3">
-                    <select id="filterStatus" class="form-select">
-                        <option value="All">Все статусы</option>
-                    </select>
+                    <div class="dropdown w-100">
+                        <button class="btn btn-light w-100 text-start d-flex justify-content-between align-items-center rounded-pill px-4 shadow-sm custom-select-btn" type="button" data-bs-toggle="dropdown" id="statBtn">
+                            <span id="statText">Все статусы</span>
+                            <i class="fa-solid fa-chevron-down text-muted small"></i>
+                        </button>
+                        <ul class="dropdown-menu w-100 shadow-lg border-0 custom-dropdown-menu dropdown-anim" id="filterStatusMenu">
+                            <!-- Сюда добавятся статусы -->
+                        </ul>
+                    </div>
+                    <input type="hidden" id="filterStatus" value="All">
                 </div>
+
                 <div class="col-md-3 text-end">
-                    <button class="btn btn-brand-gold w-100 fw-bold" id="openAddModalBtn">
+                    <button class="btn btn-brand-gold w-100 fw-bold rounded-pill shadow-sm" id="openAddModalBtn">
                         <i class="fa-solid fa-plus me-1"></i> Добавить вещь
                     </button>
                 </div>
@@ -77,18 +96,18 @@
         </div>
 
         <!-- Таблица инвентаря -->
-        <div class="card shadow-sm border-0 bg-body">
+        <div class="card shadow-sm border-0 bg-body custom-rounded overflow-hidden">
             <div class="card-body p-0 table-responsive">
                 <table class="table table-hover mb-0 align-middle">
                     <thead class="custom-thead">
                         <tr>
-                            <th>№</th>
+                            <th class="ps-4">№</th>
                             <th>Наименование</th>
                             <th>Категория</th>
                             <th>Описание</th>
                             <th>Кол-во</th>
                             <th>Статус</th>
-                            <th>Действия</th>
+                            <th class="pe-4">Действия</th>
                         </tr>
                     </thead>
                     <tbody id="inventoryTable">
@@ -101,44 +120,44 @@
 
     <!-- Универсальное Модальное окно -->
     <div class="modal fade" id="itemModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold" id="modalTitle">Новое оборудование</h5>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content custom-rounded border-0 shadow-lg modal-anim">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold fs-4" id="modalTitle">Новое оборудование</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="itemForm">
                         <input type="hidden" id="itemId">
                         <div class="mb-3">
-                            <label class="form-label text-muted small fw-bold text-uppercase">Наименование</label>
-                            <input type="text" class="form-control" id="itemName" required>
+                            <label class="form-label text-muted small fw-bold text-uppercase ms-2">Наименование</label>
+                            <input type="text" class="form-control rounded-pill px-3" id="itemName" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label text-muted small fw-bold text-uppercase">Категория (Выберите или впишите)</label>
-                            <input type="text" class="form-control" id="itemCategory" list="categoryList" placeholder="Например: Мебель" required>
+                            <label class="form-label text-muted small fw-bold text-uppercase ms-2">Категория (Выберите или впишите)</label>
+                            <input type="text" class="form-control rounded-pill px-3" id="itemCategory" list="categoryList" placeholder="Например: Мебель" required>
                             <datalist id="categoryList"></datalist>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label text-muted small fw-bold text-uppercase">Описание</label>
-                            <textarea class="form-control" id="itemDesc" rows="2" placeholder="Комплектация, комментарий..."></textarea>
+                            <label class="form-label text-muted small fw-bold text-uppercase ms-2">Описание</label>
+                            <textarea class="form-control custom-rounded p-3" id="itemDesc" rows="2" placeholder="Комплектация, комментарий..."></textarea>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label text-muted small fw-bold text-uppercase">Кол-во</label>
-                                <input type="number" class="form-control" id="itemQty" min="1" required>
+                                <label class="form-label text-muted small fw-bold text-uppercase ms-2">Кол-во</label>
+                                <input type="number" class="form-control rounded-pill px-3" id="itemQty" min="1" required>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label text-muted small fw-bold text-uppercase">Статус (Выберите или впишите)</label>
-                                <input type="text" class="form-control" id="itemStatus" list="statusList" placeholder="Например: Списано" required>
+                                <label class="form-label text-muted small fw-bold text-uppercase ms-2">Статус (Выберите или впишите)</label>
+                                <input type="text" class="form-control rounded-pill px-3" id="itemStatus" list="statusList" placeholder="Например: Списано" required>
                                 <datalist id="statusList"></datalist>
                             </div>
                         </div>
                     </form>
                 </div>
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                    <button type="button" class="btn btn-brand-gold" id="saveItemBtn">Сохранить</button>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-brand-gold rounded-pill px-4 fw-bold" id="saveItemBtn">Сохранить</button>
                 </div>
             </div>
         </div>

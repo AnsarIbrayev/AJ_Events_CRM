@@ -23,7 +23,7 @@ $(document).ready(function() {
     }
 
     // --------------------------------------------------
-    // 2. ИНИЦИАЛИЗАЦИЯ БОЛЬШОЙ БАЗЫ ДАННЫХ (25 ВЕЩЕЙ)
+    // 2. ИНИЦИАЛИЗАЦИЯ БОЛЬШОЙ БАЗЫ ДАННЫХ
     // --------------------------------------------------
     let defaultData = [
         { id: 104, name: "Проектор Epson EB-X41", category: "Видео", desc: "В кейсе, с пультом", qty: 3, status: "В ремонте" },
@@ -53,13 +53,12 @@ $(document).ready(function() {
         { id: 125, name: "Суфлер для спикера", category: "Видео", desc: "С монитором 24 дюйма", qty: 1, status: "На складе" }
     ];
 
-    // Ключ _v6, чтобы загрузить новую большую базу!
-    let inventory = JSON.parse(localStorage.getItem('crm_inventory_v6')) || defaultData;
-    let nextId = parseInt(localStorage.getItem('crm_nextId_v6')) || 126;
+    let inventory = JSON.parse(localStorage.getItem('crm_inventory_v7')) || defaultData;
+    let nextId = parseInt(localStorage.getItem('crm_nextId_v7')) || 126;
 
     function saveDataToStorage() {
-        localStorage.setItem('crm_inventory_v6', JSON.stringify(inventory));
-        localStorage.setItem('crm_nextId_v6', nextId.toString());
+        localStorage.setItem('crm_inventory_v7', JSON.stringify(inventory));
+        localStorage.setItem('crm_nextId_v7', nextId.toString());
         updateDynamicLists(); 
     }
 
@@ -67,24 +66,20 @@ $(document).ready(function() {
     // 3. АЛГОРИТМ ПРИКОЛЬНЫХ ЦВЕТОВ ДЛЯ НОВЫХ СТАТУСОВ
     // --------------------------------------------------
     function getStatusBadge(status) {
-        // Стандартные статусы
-        if (status === 'На складе') return '<span class="badge bg-success">На складе</span>';
-        if (status === 'На мероприятии') return '<span class="badge bg-warning text-dark">На мероприятии</span>';
-        if (status === 'В ремонте') return '<span class="badge bg-danger">В ремонте</span>';
+        if (status === 'На складе') return '<span class="badge bg-success shadow-sm">На складе</span>';
+        if (status === 'На мероприятии') return '<span class="badge bg-warning text-dark shadow-sm">На мероприятии</span>';
+        if (status === 'В ремонте') return '<span class="badge bg-danger shadow-sm">В ремонте</span>';
 
-        // Генерация цвета на основе текста (хеширование)
         let hash = 0;
         for (let i = 0; i < status.length; i++) {
             hash = status.charCodeAt(i) + ((hash << 5) - hash);
         }
-        // У нас 5 кастомных цветов (от 0 до 4) в style.css
         let colorIndex = Math.abs(hash) % 5; 
-        
-        return `<span class="badge badge-custom-${colorIndex}">${status}</span>`;
+        return `<span class="badge badge-custom-${colorIndex} shadow-sm">${status}</span>`;
     }
 
     // --------------------------------------------------
-    // 4. ДИНАМИЧЕСКИЕ КАТЕГОРИИ И СТАТУСЫ
+    // 4. ДИНАМИЧЕСКИЕ КАТЕГОРИИ И СТАТУСЫ (КАСТОМНЫЙ DROPDOWN)
     // --------------------------------------------------
     function updateDynamicLists() {
         let categories = new Set();
@@ -95,53 +90,77 @@ $(document).ready(function() {
             if(item.status) statuses.add(item.status);
         });
 
+        // Обновляем datalist в модалке
         $('#categoryList').empty();
         categories.forEach(c => $('#categoryList').append(`<option value="${c}">`));
-
         $('#statusList').empty();
         statuses.forEach(s => $('#statusList').append(`<option value="${s}">`));
 
-        let currentCat = $('#filterCategory').val();
-        let currentStat = $('#filterStatus').val();
+        // Обновляем крутые анимированные фильтры
+        let catMenu = $('#filterCategoryMenu');
+        catMenu.empty().append(`<li><a class="dropdown-item category-item active" href="#" data-val="All">Все категории</a></li>`);
+        categories.forEach(c => catMenu.append(`<li><a class="dropdown-item category-item" href="#" data-val="${c}">${c}</a></li>`));
 
-        $('#filterCategory').empty().append('<option value="All">Все категории</option>');
-        categories.forEach(c => $('#filterCategory').append(`<option value="${c}">${c}</option>`));
-        $('#filterCategory').val(currentCat || "All"); 
+        let statMenu = $('#filterStatusMenu');
+        statMenu.empty().append(`<li><a class="dropdown-item status-item active" href="#" data-val="All">Все статусы</a></li>`);
+        statuses.forEach(s => statMenu.append(`<li><a class="dropdown-item status-item" href="#" data-val="${s}">${s}</a></li>`));
 
-        $('#filterStatus').empty().append('<option value="All">Все статусы</option>');
-        statuses.forEach(s => $('#filterStatus').append(`<option value="${s}">${s}</option>`));
-        $('#filterStatus').val(currentStat || "All");
+        // Назначаем клики для созданных элементов
+        bindDropdownClicks();
+    }
+
+    function bindDropdownClicks() {
+        $('.category-item').off('click').on('click', function(e) {
+            e.preventDefault();
+            $('.category-item').removeClass('active');
+            $(this).addClass('active');
+            $('#catText').text($(this).text()); // Меняем текст на кнопке
+            $('#filterCategory').val($(this).data('val')); // Записываем в скрытый инпут
+            applyFilters();
+        });
+
+        $('.status-item').off('click').on('click', function(e) {
+            e.preventDefault();
+            $('.status-item').removeClass('active');
+            $(this).addClass('active');
+            $('#statText').text($(this).text());
+            $('#filterStatus').val($(this).data('val'));
+            applyFilters();
+        });
     }
 
     // --------------------------------------------------
-    // 5. ОТРИСОВКА ТАБЛИЦЫ
+    // 5. ОТРИСОВКА ТАБЛИЦЫ С АНИМАЦИЕЙ
     // --------------------------------------------------
     function renderTable(data) {
         let tbody = $('#inventoryTable');
         tbody.empty();
 
         if(data.length === 0) {
-            tbody.append('<tr><td colspan="7" class="text-center text-muted py-4">Ничего не найдено</td></tr>');
+            tbody.append('<tr><td colspan="7" class="text-center text-muted py-5">Ничего не найдено</td></tr>');
             return;
         }
 
         data.forEach(function(item, index) { 
-            let statusBadge = getStatusBadge(item.status); // Вызов алгоритма цвета
+            let statusBadge = getStatusBadge(item.status); 
             let description = item.desc ? item.desc : '<span class="text-muted">-</span>';
+            
+            // Задержка анимации для каждой следующей строки (создает эффект волны)
+            let animDelay = (index % 15) * 0.04; 
 
             let row = `
-                <tr>
-                    <td class="text-muted fw-bold">${index + 1}</td>
+                <tr class="animated-row" style="animation-delay: ${animDelay}s">
+                    <td class="text-muted fw-bold ps-4">${index + 1}</td>
                     <td class="fw-bold">${item.name}</td>
                     <td>${item.category}</td>
                     <td><small>${description}</small></td>
                     <td>${item.qty} шт.</td>
                     <td>${statusBadge}</td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-primary edit-btn me-1" data-id="${item.id}" title="Редактировать">
+                    <td class="pe-4">
+                        <button class="btn btn-sm btn-outline-primary edit-btn rounded-circle me-1" data-id="${item.id}" title="Редактировать">
                             <i class="fa-solid fa-pen"></i>
                         </button>
-                        <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${item.id}" title="Удалить">
+                        <button class="btn btn-sm btn-outline-danger delete-btn rounded-circle" data-id="${item.id}" title="Удалить">
                             <i class="fa-solid fa-trash"></i>
                         </button>
                     </td>
@@ -160,8 +179,8 @@ $(document).ready(function() {
     // --------------------------------------------------
     function applyFilters() {
         let searchText = $('#searchInput').val().toLowerCase();
-        let catFilter = $('#filterCategory').val();
-        let statFilter = $('#filterStatus').val();
+        let catFilter = $('#filterCategory').val(); // Берем из скрытого инпута
+        let statFilter = $('#filterStatus').val();  // Берем из скрытого инпута
 
         let filteredData = inventory.filter(function(item) {
             let matchText = item.name.toLowerCase().includes(searchText) || 
@@ -176,7 +195,6 @@ $(document).ready(function() {
     }
 
     $('#searchInput').on('keyup', applyFilters);
-    $('#filterCategory, #filterStatus').on('change', applyFilters);
 
     // --------------------------------------------------
     // 7. ДОБАВЛЕНИЕ И РЕДАКТИРОВАНИЕ
@@ -240,9 +258,12 @@ $(document).ready(function() {
         saveDataToStorage();
         $('#itemModal').modal('hide');
         
+        // Сбрасываем фильтры
         $('#searchInput').val('');
         $('#filterCategory').val('All');
+        $('#catText').text('Все категории');
         $('#filterStatus').val('All');
+        $('#statText').text('Все статусы');
         applyFilters(); 
     });
 
@@ -250,7 +271,7 @@ $(document).ready(function() {
     // 8. УДАЛЕНИЕ
     // --------------------------------------------------
     $('#inventoryTable').on('click', '.delete-btn', function() {
-        if (confirm("Удалить позицию навсегда?")) {
+        if (confirm("Удалить вещь навсегда?")) {
             let idToDelete = $(this).data('id');
             inventory = inventory.filter(item => item.id !== idToDelete);
             saveDataToStorage(); 
