@@ -1,7 +1,30 @@
 $(document).ready(function() {
     
-    // 1. ИНИЦИАЛИЗАЦИЯ И LOCALSTORAGE
-    // Реалистичный массив данных, перемешанный как на настоящем складе
+    // --------------------------------------------------
+    // 1. ТЁМНАЯ И СВЕТЛАЯ ТЕМА (DARK MODE)
+    // --------------------------------------------------
+    let currentTheme = localStorage.getItem('crm_theme') || 'light';
+    $('html').attr('data-bs-theme', currentTheme);
+    updateThemeIcon(currentTheme);
+
+    $('#themeToggle').click(function() {
+        currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+        $('html').attr('data-bs-theme', currentTheme);
+        localStorage.setItem('crm_theme', currentTheme);
+        updateThemeIcon(currentTheme);
+    });
+
+    function updateThemeIcon(theme) {
+        if (theme === 'dark') {
+            $('#themeToggle').html('<i class="fa-solid fa-sun text-warning"></i>');
+        } else {
+            $('#themeToggle').html('<i class="fa-solid fa-moon"></i>');
+        }
+    }
+
+    // --------------------------------------------------
+    // 2. ИНИЦИАЛИЗАЦИЯ ДАННЫХ
+    // --------------------------------------------------
     let defaultData = [
         { id: 104, name: "Проектор Epson EB-X41", category: "Видео", desc: "В кейсе, с пультом", qty: 3, status: "В ремонте" },
         { id: 112, name: "Баннер Roll-up 2х0.8м", category: "Декорации", desc: "Каркас без полотна", qty: 15, status: "На складе" },
@@ -13,46 +36,76 @@ $(document).ready(function() {
         { id: 111, name: "DMX-пульт GrandMA2", category: "Свет", desc: "Основной пульт управления", qty: 1, status: "В ремонте" },
         { id: 113, name: "Красная ковровая дорожка", category: "Декорации", desc: "Длина 10 метров, ширина 2м", qty: 3, status: "На складе" },
         { id: 102, name: "Цифровой микшер Behringer X32", category: "Звук", desc: "В жестком кейсе", qty: 2, status: "На мероприятии" },
-        { id: 108, name: "LED-прожектор RGB PAR", category: "Свет", desc: "Архитектурная подсветка", qty: 24, status: "На складе" },
-        { id: 116, name: "Подиум сценический 2х1м", category: "Декорации", desc: "Высота ножек 40 см", qty: 18, status: "На мероприятии" },
-        { id: 105, name: "Плазменная панель Samsung 65'", category: "Видео", desc: "Напольная стойка в комплекте", qty: 4, status: "На складе" },
-        { id: 110, name: "Генератор тяжелого дыма", category: "Свет", desc: "Жидкость залита на 50%", qty: 2, status: "На складе" },
-        { id: 107, name: "Видеомикшер Blackmagic ATEM", category: "Видео", desc: "Для онлайн-трансляций", qty: 1, status: "На складе" },
-        { id: 114, name: "Стойка ограждения (золото)", category: "Декорации", desc: "С красным бархатным канатом", qty: 20, status: "На мероприятии" }
+        { id: 108, name: "LED-прожектор RGB PAR", category: "Свет", desc: "Архитектурная подсветка", qty: 24, status: "На складе" }
     ];
 
-    // Меняем ключ на v3, чтобы браузер сбросил старый кэш и загрузил наш новый перемешанный список
-    let inventory = JSON.parse(localStorage.getItem('crm_inventory_v3')) || defaultData;
-    let nextId = parseInt(localStorage.getItem('crm_nextId_v3')) || 117;
+    let inventory = JSON.parse(localStorage.getItem('crm_inventory_v5')) || defaultData;
+    let nextId = parseInt(localStorage.getItem('crm_nextId_v5')) || 117;
 
-    // Функция сохранения данных в память браузера
     function saveDataToStorage() {
-        localStorage.setItem('crm_inventory_v3', JSON.stringify(inventory));
-        localStorage.setItem('crm_nextId_v3', nextId.toString());
+        localStorage.setItem('crm_inventory_v5', JSON.stringify(inventory));
+        localStorage.setItem('crm_nextId_v5', nextId.toString());
+        updateDynamicLists(); // Пересобираем фильтры при сохранении
     }
 
-    // 2. ОТРИСОВКА ИНТЕРФЕЙСА
+    // --------------------------------------------------
+    // 3. ДИНАМИЧЕСКИЕ КАТЕГОРИИ И СТАТУСЫ
+    // --------------------------------------------------
+    function updateDynamicLists() {
+        let categories = new Set();
+        let statuses = new Set();
+        
+        // Система сама изучает базу и находит все возможные статусы и категории
+        inventory.forEach(item => {
+            if(item.category) categories.add(item.category);
+            if(item.status) statuses.add(item.status);
+        });
+
+        // Заполняем подсказки (datalist) в форме добавления
+        $('#categoryList').empty();
+        categories.forEach(c => $('#categoryList').append(`<option value="${c}">`));
+
+        $('#statusList').empty();
+        statuses.forEach(s => $('#statusList').append(`<option value="${s}">`));
+
+        // Заполняем фильтры над таблицей
+        let currentCat = $('#filterCategory').val();
+        let currentStat = $('#filterStatus').val();
+
+        $('#filterCategory').empty().append('<option value="All">Все категории</option>');
+        categories.forEach(c => $('#filterCategory').append(`<option value="${c}">${c}</option>`));
+        $('#filterCategory').val(currentCat || "All"); // Возвращаем выбор
+
+        $('#filterStatus').empty().append('<option value="All">Все статусы</option>');
+        statuses.forEach(s => $('#filterStatus').append(`<option value="${s}">${s}</option>`));
+        $('#filterStatus').val(currentStat || "All");
+    }
+
+    // --------------------------------------------------
+    // 4. ОТРИСОВКА ТАБЛИЦЫ
+    // --------------------------------------------------
     function renderTable(data) {
         let tbody = $('#inventoryTable');
         tbody.empty();
 
         if(data.length === 0) {
-            tbody.append('<tr><td colspan="7" class="text-center text-muted">Ничего не найдено</td></tr>');
+            tbody.append('<tr><td colspan="7" class="text-center text-muted py-4">Ничего не найдено</td></tr>');
             return;
         }
 
-        // ДОБАВЛЯЕМ index В ФУНКЦИЮ, чтобы считать номера строк
         data.forEach(function(item, index) { 
+            // Стандартные статусы цветные, кастомные (новые) будут серыми бейджами
             let statusBadge = '';
             if (item.status === 'На складе') statusBadge = '<span class="badge bg-success">На складе</span>';
             else if (item.status === 'На мероприятии') statusBadge = '<span class="badge bg-warning text-dark">На мероприятии</span>';
-            else statusBadge = '<span class="badge bg-danger">В ремонте</span>';
+            else if (item.status === 'В ремонте') statusBadge = '<span class="badge bg-danger">В ремонте</span>';
+            else statusBadge = `<span class="badge bg-secondary">${item.status}</span>`;
 
             let description = item.desc ? item.desc : '<span class="text-muted">-</span>';
 
             let row = `
                 <tr>
-                    <td>${index + 1}</td> <!-- Выводим порядковый номер вместо ID -->
+                    <td class="text-muted fw-bold">${index + 1}</td>
                     <td class="fw-bold">${item.name}</td>
                     <td>${item.category}</td>
                     <td><small>${description}</small></td>
@@ -71,27 +124,22 @@ $(document).ready(function() {
             tbody.append(row);
         });
 
-        // Статистика всегда считается по всей базе (inventory)
         $('#totalItems').text(inventory.length);
         let available = inventory.filter(i => i.status === 'На складе').length;
         $('#availableItems').text(available);
     }
 
-    renderTable(inventory); // Рисуем таблицу при загрузке
-
-    // 3. ФИЛЬТРАЦИЯ И ПОИСК
+    // --------------------------------------------------
+    // 5. ФИЛЬТРАЦИЯ
+    // --------------------------------------------------
     function applyFilters() {
         let searchText = $('#searchInput').val().toLowerCase();
         let catFilter = $('#filterCategory').val();
         let statFilter = $('#filterStatus').val();
 
         let filteredData = inventory.filter(function(item) {
-            // Ищем по имени, описанию ИЛИ по ID
             let matchText = item.name.toLowerCase().includes(searchText) || 
-                            (item.desc && item.desc.toLowerCase().includes(searchText)) ||
-                            item.id.toString().includes(searchText); 
-            
-            // Проверяем совпадение с селекторами
+                            (item.desc && item.desc.toLowerCase().includes(searchText));
             let matchCategory = (catFilter === "All") || (item.category === catFilter);
             let matchStatus = (statFilter === "All") || (item.status === statFilter);
 
@@ -101,12 +149,12 @@ $(document).ready(function() {
         renderTable(filteredData);
     }
 
-    // Слушаем изменения в поиске и выпадающих списках
     $('#searchInput').on('keyup', applyFilters);
     $('#filterCategory, #filterStatus').on('change', applyFilters);
 
-
-    // 4. ДОБАВЛЕНИЕ И РЕДАКТИРОВАНИЕ
+    // --------------------------------------------------
+    // 6. ДОБАВЛЕНИЕ И РЕДАКТИРОВАНИЕ
+    // --------------------------------------------------
     $('#openAddModalBtn').click(function() {
         $('#modalTitle').text('Новое оборудование');
         $('#itemForm')[0].reset();
@@ -133,18 +181,17 @@ $(document).ready(function() {
     $('#saveItemBtn').click(function() {
         let id = $('#itemId').val();
         let name = $('#itemName').val();
-        let category = $('#itemCategory').val();
+        let category = $('#itemCategory').val().trim(); // Убираем лишние пробелы
         let desc = $('#itemDesc').val();
         let qty = $('#itemQty').val();
-        let status = $('#itemStatus').val();
+        let status = $('#itemStatus').val().trim();
 
-        if (name === "" || qty === "") {
-            alert("Пожалуйста, заполните обязательные поля!");
+        if (name === "" || qty === "" || category === "" || status === "") {
+            alert("Заполните Наименование, Категорию, Кол-во и Статус!");
             return;
         }
 
         if (id) {
-            // Обновляем
             let itemIndex = inventory.findIndex(i => i.id == id);
             if (itemIndex !== -1) {
                 inventory[itemIndex].name = name;
@@ -154,7 +201,6 @@ $(document).ready(function() {
                 inventory[itemIndex].status = status;
             }
         } else {
-            // Добавляем
             inventory.push({
                 id: nextId++,
                 name: name,
@@ -165,24 +211,28 @@ $(document).ready(function() {
             });
         }
 
-        saveDataToStorage(); // СОХРАНЯЕМ В ПАМЯТЬ БРАУЗЕРА
-        
+        saveDataToStorage();
         $('#itemModal').modal('hide');
         
-        // Сбрасываем фильтры, чтобы увидеть новую запись
         $('#searchInput').val('');
         $('#filterCategory').val('All');
         $('#filterStatus').val('All');
         applyFilters(); 
     });
 
-    // 5. УДАЛЕНИЕ
+    // --------------------------------------------------
+    // 7. УДАЛЕНИЕ
+    // --------------------------------------------------
     $('#inventoryTable').on('click', '.delete-btn', function() {
-        if (confirm("Вы уверены, что хотите удалить эту позицию?")) {
+        if (confirm("Удалить позицию навсегда?")) {
             let idToDelete = $(this).data('id');
             inventory = inventory.filter(item => item.id !== idToDelete);
-            saveDataToStorage(); // СОХРАНЯЕМ В ПАМЯТЬ БРАУЗЕРА
-            applyFilters(); // Обновляем с учетом текущих фильтров
+            saveDataToStorage(); 
+            applyFilters(); 
         }
     });
+
+    // Запуск
+    updateDynamicLists();
+    renderTable(inventory);
 });
