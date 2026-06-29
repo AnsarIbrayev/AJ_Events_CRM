@@ -22,29 +22,64 @@ $(document).ready(function() {
     }
 
     // --------------------------------------------------
-    // 2. БАЗА ДАННЫХ: ЗАЛЫ (CRUD)
+    // 2. БАЗА ДАННЫХ: ЗАЛЫ (Сортировка и даты)
     // --------------------------------------------------
     let defaultVenues = [
-        { id: 1, date: "30 Июня 2026", venue: "Astana IT University, Assembly Hall", event: "Защита Практики", client: "Кафедра SE", status: "Подтверждено" },
-        { id: 2, date: "15 Июля 2026", venue: "Radisson Blu, Grand Ballroom", event: "IT Forum 2026", client: "TechCorp", status: "Оплачено" },
-        { id: 3, date: "22 Июля 2026", venue: "Hilton Astana, Зал А", event: "Свадьба (VIP)", client: "Частное лицо", status: "Ожидает предоплату" },
-        { id: 4, date: "05 Авг 2026", venue: "EXPO Congress Center", event: "Выставка TechExpo", client: "Министерство Цифровизации", status: "Подтверждено" }
+        { id: 1, date: "2026-06-30", venue: "Astana IT University, Assembly Hall", event: "Защита Практики", client: "Кафедра SE", status: "Подтверждено" },
+        { id: 2, date: "2026-07-15", venue: "Radisson Blu, Grand Ballroom", event: "IT Forum 2026", client: "TechCorp", status: "Оплачено" },
+        { id: 3, date: "2026-07-22", venue: "Hilton Astana, Зал А", event: "Свадьба (VIP)", client: "Частное лицо", status: "Ожидает предоплату" },
+        { id: 4, date: "2026-08-05", venue: "EXPO Congress Center", event: "Выставка TechExpo", client: "Министерство Цифровизации", status: "Подтверждено" }
     ];
 
-    // Ключи v2 для сброса старого кэша без ID
-    let venuesData = JSON.parse(localStorage.getItem('crm_venues_v2')) || defaultVenues;
-    let nextVenueId = parseInt(localStorage.getItem('crm_nextVenueId_v2')) || 5;
+    let venuesData = JSON.parse(localStorage.getItem('crm_venues_v3')) || defaultVenues;
+    let nextVenueId = parseInt(localStorage.getItem('crm_nextVenueId_v3')) || 5;
+
+    let sortCol = 'date';
+    let sortAsc = true;
 
     function saveVenues() {
-        localStorage.setItem('crm_venues_v2', JSON.stringify(venuesData));
-        localStorage.setItem('crm_nextVenueId_v2', nextVenueId.toString());
+        localStorage.setItem('crm_venues_v3', JSON.stringify(venuesData));
+        localStorage.setItem('crm_nextVenueId_v3', nextVenueId.toString());
     }
+
+    // ИЗМЕНЕНО: Конвертер теперь выдает формат ДД.ММ.ГГГГ (Например: 30.06.2026)
+    function formatDate(isoString) {
+        if (!isoString) return '';
+        let parts = isoString.split('-');
+        if (parts.length !== 3) return isoString;
+        // Берем День (parts[2]), Месяц (parts[1]) и Год (parts[0])
+        return `${parts[2]}.${parts[1]}.${parts[0]}`;
+    }
+
+    $('.sortable').click(function() {
+        let clickedCol = $(this).data('col');
+        
+        if (sortCol === clickedCol) {
+            sortAsc = !sortAsc; 
+        } else {
+            sortCol = clickedCol; 
+            sortAsc = true;       
+        }
+        renderVenues();
+    });
 
     function renderVenues() {
         let tbody = $('#venuesTable');
         tbody.empty();
 
-        venuesData.forEach((item, index) => {
+        $('.sort-icon').removeClass('fa-sort-up fa-sort-down text-primary').addClass('fa-sort');
+        let activeHeaderIcon = $(`.sortable[data-col="${sortCol}"] i`);
+        activeHeaderIcon.removeClass('fa-sort').addClass(sortAsc ? 'fa-sort-up text-primary' : 'fa-sort-down text-primary');
+
+        let sortedData = [...venuesData].sort((a, b) => {
+            let valA = a[sortCol].toLowerCase();
+            let valB = b[sortCol].toLowerCase();
+            
+            let comparison = valA.localeCompare(valB, 'ru');
+            return sortAsc ? comparison : -comparison;
+        });
+
+        sortedData.forEach((item, index) => {
             let statusBadge = '';
             if (item.status === 'Подтверждено' || item.status === 'Оплачено') {
                 statusBadge = `<span class="badge bg-success shadow-sm">${item.status}</span>`;
@@ -55,10 +90,11 @@ $(document).ready(function() {
             }
 
             let animDelay = index * 0.05;
+            let displayDate = formatDate(item.date); // Применяем новый цифровой формат
             
             let row = `
                 <tr class="animated-row" style="animation-delay: ${animDelay}s">
-                    <td class="fw-bold ps-4 text-primary">${item.date}</td>
+                    <td class="fw-bold ps-4 text-primary">${displayDate}</td>
                     <td class="fw-bold"><i class="fa-solid fa-location-dot text-danger opacity-75 me-2"></i>${item.venue}</td>
                     <td>${item.event}</td>
                     <td class="text-muted">${item.client}</td>
@@ -90,7 +126,7 @@ $(document).ready(function() {
         if (item) {
             $('#venueModalTitle').text('Редактировать бронь');
             $('#vId').val(item.id);
-            $('#vDate').val(item.date);
+            $('#vDate').val(item.date); 
             $('#vName').val(item.venue);
             $('#vEvent').val(item.event);
             $('#vClient').val(item.client);
@@ -101,7 +137,7 @@ $(document).ready(function() {
 
     $('#saveVenueBtn').click(function() {
         let id = $('#vId').val();
-        let date = $('#vDate').val();
+        let date = $('#vDate').val(); 
         let name = $('#vName').val();
         let event = $('#vEvent').val();
         let client = $('#vClient').val();
@@ -122,7 +158,7 @@ $(document).ready(function() {
                 venuesData[index].status = status;
             }
         } else {
-            venuesData.unshift({
+            venuesData.push({
                 id: nextVenueId++,
                 date: date,
                 venue: name,
@@ -138,7 +174,7 @@ $(document).ready(function() {
     });
 
     // --------------------------------------------------
-    // 3. БАЗА ДАННЫХ: ПОДРЯДЧИКИ (CRUD)
+    // 3. БАЗА ДАННЫХ: ПОДРЯДЧИКИ
     // --------------------------------------------------
     let defaultContractors = [
         { id: 1, name: "Иван Смирнов", role: "Главный звукорежиссер", phone: "+7 (777) 123-45-67", rating: 5, icon: "fa-headphones" },
@@ -148,12 +184,12 @@ $(document).ready(function() {
         { id: 5, name: "Студия 'VideoArt'", role: "Видеооператоры / Трансляция", phone: "+7 (707) 555-88-99", rating: 4, icon: "fa-video" }
     ];
 
-    let contractorsData = JSON.parse(localStorage.getItem('crm_contractors_v2')) || defaultContractors;
-    let nextContractorId = parseInt(localStorage.getItem('crm_nextContractorId_v2')) || 6;
+    let contractorsData = JSON.parse(localStorage.getItem('crm_contractors_v3')) || defaultContractors;
+    let nextContractorId = parseInt(localStorage.getItem('crm_nextContractorId_v3')) || 6;
 
     function saveContractors() {
-        localStorage.setItem('crm_contractors_v2', JSON.stringify(contractorsData));
-        localStorage.setItem('crm_nextContractorId_v2', nextContractorId.toString());
+        localStorage.setItem('crm_contractors_v3', JSON.stringify(contractorsData));
+        localStorage.setItem('crm_nextContractorId_v3', nextContractorId.toString());
     }
 
     function renderContractors() {
@@ -168,7 +204,6 @@ $(document).ready(function() {
                 <div class="col-md-6 col-lg-4 animated-row" style="animation-delay: ${animDelay}s">
                     <div class="card shadow-sm border-0 bg-body custom-rounded card-hover h-100 position-relative">
                         
-                        <!-- Кнопки управления внутри карточки -->
                         <div class="position-absolute top-0 end-0 p-2 z-3">
                             <button class="btn btn-sm btn-light border-0 edit-contractor-btn shadow-sm rounded-circle text-primary me-1" data-id="${item.id}" title="Изменить">
                                 <i class="fa-solid fa-pen"></i>
@@ -232,7 +267,6 @@ $(document).ready(function() {
             return;
         }
 
-        // УМНАЯ ЗАЩИТА ИКОНКИ: если пользователь вписал ерунду вместо fa-класса, ставим красивую звездочку
         let safeIcon = iconInput.includes('fa-') ? iconInput : 'fa-star';
 
         if (id) {
@@ -262,22 +296,18 @@ $(document).ready(function() {
     // --------------------------------------------------
     // 4. УНИВЕРСАЛЬНОЕ УДАЛЕНИЕ
     // --------------------------------------------------
-    
-    // Клик "Удалить Зал"
     $('#venuesTable').on('click', '.delete-venue-btn', function() {
         $('#deleteTargetType').val('venue');
         $('#deleteTargetId').val($(this).data('id'));
         $('#deleteModal').modal('show');
     });
 
-    // Клик "Удалить Подрядчика"
     $('#contractorsGrid').on('click', '.delete-contractor-btn', function() {
         $('#deleteTargetType').val('contractor');
         $('#deleteTargetId').val($(this).data('id'));
         $('#deleteModal').modal('show');
     });
 
-    // Подтверждение удаления в модальном окне
     $('#confirmDeleteBtn').click(function() {
         let type = $('#deleteTargetType').val();
         let id = $('#deleteTargetId').val();

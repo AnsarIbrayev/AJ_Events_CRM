@@ -73,11 +73,18 @@
                         <table class="table table-hover mb-0 align-middle">
                             <thead class="custom-thead">
                                 <tr>
-                                    <th class="ps-4">Дата</th>
-                                    <th>Площадка (Venue)</th>
+                                    <!-- Добавлены классы sortable и иконки сортировки -->
+                                    <th class="ps-4 sortable user-select-none" data-col="date" style="cursor: pointer;" title="Сортировать по дате">
+                                        Дата <i class="fa-solid fa-sort ms-1 opacity-50 sort-icon"></i>
+                                    </th>
+                                    <th class="sortable user-select-none" data-col="venue" style="cursor: pointer;" title="Сортировать по площадке">
+                                        Площадка (Venue) <i class="fa-solid fa-sort ms-1 opacity-50 sort-icon"></i>
+                                    </th>
                                     <th>Мероприятие</th>
                                     <th>Клиент</th>
-                                    <th>Статус брони</th>
+                                    <th class="sortable user-select-none" data-col="status" style="cursor: pointer;" title="Сортировать по статусу">
+                                        Статус брони <i class="fa-solid fa-sort ms-1 opacity-50 sort-icon"></i>
+                                    </th>
                                     <th class="pe-4 text-end">Действия</th>
                                 </tr>
                             </thead>
@@ -102,7 +109,7 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА 1: ЗАЛЫ (ДОБАВИТЬ/ИЗМЕНИТЬ) -->
+    <!-- МОДАЛКА 1: ЗАЛЫ -->
     <div class="modal fade" id="venueModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content custom-rounded border-0 shadow-lg modal-anim">
@@ -115,7 +122,8 @@
                         <input type="hidden" id="vId">
                         <div class="mb-3">
                             <label class="form-label text-muted small fw-bold text-uppercase ms-2">Дата</label>
-                            <input type="text" class="form-control rounded-pill px-3" id="vDate" placeholder="Например: 12 Сен 2026" required>
+                            <!-- ТЕПЕРЬ ЗДЕСЬ НАСТОЯЩИЙ КАЛЕНДАРЬ (type="date") -->
+                            <input type="date" class="form-control rounded-pill px-3" id="vDate" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label text-muted small fw-bold text-uppercase ms-2">Название площадки (Зала)</label>
@@ -150,7 +158,7 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА 2: ПОДРЯДЧИКИ (ДОБАВИТЬ/ИЗМЕНИТЬ) -->
+    <!-- МОДАЛКА 2: ПОДРЯДЧИКИ -->
     <div class="modal fade" id="contractorModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content custom-rounded border-0 shadow-lg modal-anim">
@@ -195,7 +203,7 @@
         </div>
     </div>
 
-    <!-- КРАСИВОЕ УНИВЕРСАЛЬНОЕ МОДАЛЬНОЕ ОКНО УДАЛЕНИЯ -->
+    <!-- МОДАЛЬНОЕ ОКНО УДАЛЕНИЯ -->
     <div class="modal fade" id="deleteModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content custom-rounded border-0 shadow-lg modal-anim text-center p-4">
