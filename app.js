@@ -1,59 +1,19 @@
 $(document).ready(function() {
     
     // --------------------------------------------------
-    // 1. ИДЕАЛЬНАЯ ВОЛНОВАЯ АНИМАЦИЯ ТЕМЫ (Telegram Style)
+    // 1. СМЕНА ТЕМЫ (Мгновенно + Плавный CSS Fade)
     // --------------------------------------------------
     let currentTheme = localStorage.getItem('crm_theme') || 'light';
     $('html').attr('data-bs-theme', currentTheme);
     updateThemeIcon(currentTheme);
 
     $('#themeToggle').click(function(e) {
-        let nextTheme = currentTheme === 'light' ? 'dark' : 'light';
-
-        // Функция, которая физически меняет тему
-        function changeTheme() {
-            currentTheme = nextTheme;
-            $('html').attr('data-bs-theme', currentTheme);
-            localStorage.setItem('crm_theme', currentTheme);
-            updateThemeIcon(currentTheme);
-        }
-
-        // Если браузер поддерживает современную отрисовку (Chrome/Edge)
-        if (document.startViewTransition) {
-            // Высчитываем координаты клика и радиус круга до краев экрана
-            const x = e.clientX;
-            const y = e.clientY;
-            const endRadius = Math.hypot(
-                Math.max(x, window.innerWidth - x),
-                Math.max(y, window.innerHeight - y)
-            );
-
-            // Запускаем снимок экрана и меняем тему
-            const transition = document.startViewTransition(changeTheme);
-
-            // Рисуем круг маской, чтобы красиво показать новую тему со всеми данными!
-            transition.ready.then(() => {
-                const clipPath = [
-                    `circle(0px at ${x}px ${y}px)`,
-                    `circle(${endRadius}px at ${x}px ${y}px)`
-                ];
-
-                document.documentElement.animate(
-                    {
-                        clipPath: nextTheme === 'dark' ? clipPath : [...clipPath].reverse()
-                    },
-                    {
-                        duration: 500,
-                        easing: 'ease-in-out',
-                        // Указываем, какой слой расширяется, а какой сжимается
-                        pseudoElement: nextTheme === 'dark' ? '::view-transition-new(root)' : '::view-transition-old(root)'
-                    }
-                );
-            });
-        } else {
-            // Запасной вариант для старых браузеров (Safari и т.д.)
-            changeTheme();
-        }
+        // Тема меняется мгновенно, без задержек. 
+        // А CSS делает так, чтобы цвета перетекали плавно.
+        currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+        $('html').attr('data-bs-theme', currentTheme);
+        localStorage.setItem('crm_theme', currentTheme);
+        updateThemeIcon(currentTheme);
     });
 
     function updateThemeIcon(theme) {
@@ -306,21 +266,19 @@ $(document).ready(function() {
     // --------------------------------------------------
     // 8. КРАСИВОЕ УДАЛЕНИЕ ЧЕРЕЗ МОДАЛЬНОЕ ОКНО
     // --------------------------------------------------
-    // Открываем модалку удаления, передавая ID
     $('#inventoryTable').on('click', '.delete-btn', function() {
         let idToDelete = $(this).data('id');
-        $('#deleteItemId').val(idToDelete); // Сохраняем ID в скрытый инпут
+        $('#deleteItemId').val(idToDelete); 
         $('#deleteModal').modal('show');
     });
 
-    // Обрабатываем клик по кнопке "Да, удалить" внутри окна
     $('#confirmDeleteBtn').click(function() {
         let idToDelete = $('#deleteItemId').val();
-        inventory = inventory.filter(item => item.id != idToDelete); // Удаляем
+        inventory = inventory.filter(item => item.id != idToDelete); 
         
         saveDataToStorage(); 
         applyFilters(); 
-        $('#deleteModal').modal('hide'); // Закрываем окно
+        $('#deleteModal').modal('hide'); 
     });
 
     // Запуск

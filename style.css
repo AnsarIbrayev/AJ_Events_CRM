@@ -5,6 +5,13 @@
     --brand-gold-hover: #b09556;
 }
 
+/* ------------------------------------------- */
+/* ПЛАВНАЯ СМЕНА ТЕМЫ (100% надежно везде)     */
+/* ------------------------------------------- */
+body, .card, .modal-content, .form-control, .btn, .dropdown-menu, th, td, span, i, div {
+    transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
 /* Глобальное скругление */
 .custom-rounded {
     border-radius: 20px !important;
@@ -40,7 +47,6 @@
     background-color: var(--brand-gold);
     border-color: var(--brand-gold);
     color: #fff;
-    transition: transform 0.2s ease, background-color 0.3s ease;
 }
 .btn-brand-gold:hover {
     background-color: var(--brand-gold-hover);
@@ -50,20 +56,7 @@
 }
 
 /* ------------------------------------------- */
-/* VIEW TRANSITIONS API (Для волны смены темы) */
-/* ------------------------------------------- */
-::view-transition-old(root),
-::view-transition-new(root) {
-    animation: none;
-    mix-blend-mode: normal;
-}
-::view-transition-old(root) { z-index: 1; }
-::view-transition-new(root) { z-index: 2; }
-[data-bs-theme="dark"]::view-transition-old(root) { z-index: 2; }
-[data-bs-theme="dark"]::view-transition-new(root) { z-index: 1; }
-
-/* ------------------------------------------- */
-/* АНИМАЦИИ (Магия UI)                         */
+/* АНИМАЦИИ ПОЯВЛЕНИЯ ЭЛЕМЕНТОВ                */
 /* ------------------------------------------- */
 .animated-row {
     animation: slideInRow 0.4s ease-out forwards;
@@ -87,7 +80,6 @@
 }
 .dropdown-item {
     border-radius: 10px;
-    transition: background-color 0.2s;
     margin-bottom: 2px;
 }
 .dropdown-item.active, .dropdown-item:active {
@@ -108,7 +100,7 @@
 /* ------------------------------------------- */
 .table-hover tbody tr:hover {
     cursor: pointer;
-    background-color: rgba(197, 168, 97, 0.05); 
+    background-color: rgba(197, 168, 97, 0.05) !important; 
 }
 .custom-thead th {
     background-color: #f8f9fa;
@@ -131,31 +123,31 @@
 [data-bs-theme="dark"] .custom-thead th {
     background-color: #24292d !important;
     color: #e9ecef !important;
-    border-bottom: 2px solid #3b4248;
+    border-bottom: 2px solid #3b4248 !important;
 }
 [data-bs-theme="dark"] .bg-body-tertiary { background-color: #121212 !important; }
 [data-bs-theme="dark"] .bg-body { background-color: #1e1e1e !important; }
-[data-bs-theme="dark"] .modal-content { background-color: #1e1e1e; }
+[data-bs-theme="dark"] .modal-content { background-color: #1e1e1e !important; }
 [data-bs-theme="dark"] .form-control {
-    background-color: #2b3035;
-    border-color: #3b4248;
-    color: #fff;
+    background-color: #2b3035 !important;
+    border-color: #3b4248 !important;
+    color: #fff !important;
 }
 [data-bs-theme="dark"] .custom-select-btn {
-    background-color: #2b3035;
-    border-color: #3b4248;
-    color: #fff;
+    background-color: #2b3035 !important;
+    border-color: #3b4248 !important;
+    color: #fff !important;
 }
 [data-bs-theme="dark"] .custom-dropdown-menu {
-    background-color: #2b3035;
+    background-color: #2b3035 !important;
 }
 [data-bs-theme="dark"] .dropdown-item {
-    color: #e9ecef;
+    color: #e9ecef !important;
 }
 [data-bs-theme="dark"] .dropdown-item:hover {
-    background-color: #3b4248;
-    color: white;
+    background-color: #3b4248 !important;
+    color: white !important;
 }
 [data-bs-theme="dark"] .table-hover tbody tr:hover {
-    background-color: #2b3035;
+    background-color: #2b3035 !important;
 }
