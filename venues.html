@@ -1,17 +1,23 @@
 <!DOCTYPE html>
-<html lang="ru" data-bs-theme="light">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AJ Events - Залы и Подрядчики</title>
-    <!-- Bootstrap CSS -->
+    
+    <!-- АНТИ-БЛИК СКРИПТ -->
+    <script>
+        let savedTheme = localStorage.getItem('crm_theme') || 'light';
+        document.documentElement.setAttribute('data-bs-theme', savedTheme);
+    </script>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-body-tertiary">
 
-    <!-- Навигация (Здесь активна вторая ссылка) -->
+    <!-- Навигация -->
     <nav class="navbar navbar-expand-lg navbar-dark brand-navbar shadow-sm position-relative" style="z-index: 1000;">
         <div class="container-fluid">
             <a class="navbar-brand" href="index.html"><i class="fa-solid fa-calendar-check me-2"></i>AJ Events CRM</a>
@@ -39,7 +45,6 @@
 
     <div class="container mt-4 position-relative" style="z-index: 10;">
         
-        <!-- Красивые переключатели вкладок (Tabs) -->
         <ul class="nav nav-pills mb-4 bg-body custom-rounded p-2 shadow-sm d-inline-flex" id="pills-tab" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active rounded-pill px-4 fw-bold" id="pills-venues-tab" data-bs-toggle="pill" data-bs-target="#pills-venues" type="button" role="tab">
@@ -53,14 +58,14 @@
             </li>
         </ul>
 
-        <!-- Содержимое вкладок -->
         <div class="tab-content" id="pills-tabContent">
             
             <!-- ВКЛАДКА 1: БРОНИРОВАНИЕ ЗАЛОВ -->
             <div class="tab-pane fade show active" id="pills-venues" role="tabpanel">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h3 class="fw-bold mb-0">Расписание площадок</h3>
-                    <button class="btn btn-brand-gold rounded-pill px-4 shadow-sm fw-bold" onclick="alert('Модуль интеграции с календарем находится в разработке (Sprint 2)')">
+                    <!-- Кнопка теперь открывает модалку -->
+                    <button class="btn btn-brand-gold rounded-pill px-4 shadow-sm fw-bold" data-bs-toggle="modal" data-bs-target="#venueModal">
                         <i class="fa-solid fa-plus me-1"></i> Новая бронь
                     </button>
                 </div>
@@ -77,7 +82,6 @@
                                 </tr>
                             </thead>
                             <tbody id="venuesTable">
-                                <!-- Рендерится через JS -->
                             </tbody>
                         </table>
                     </div>
@@ -88,18 +92,107 @@
             <div class="tab-pane fade" id="pills-contractors" role="tabpanel">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h3 class="fw-bold mb-0">Наши подрядчики (Contractors)</h3>
-                    <button class="btn btn-brand-gold rounded-pill px-4 shadow-sm fw-bold" onclick="alert('Модуль добавления подрядчиков находится в разработке (Sprint 2)')">
+                    <!-- Кнопка теперь открывает модалку -->
+                    <button class="btn btn-brand-gold rounded-pill px-4 shadow-sm fw-bold" data-bs-toggle="modal" data-bs-target="#contractorModal">
                         <i class="fa-solid fa-user-plus me-1"></i> Добавить
                     </button>
                 </div>
                 <div class="row g-4" id="contractorsGrid">
-                    <!-- Карточки рендерятся через JS -->
                 </div>
             </div>
-
         </div>
     </div>
 
+    <!-- МОДАЛКА 1: ДОБАВИТЬ ЗАЛ -->
+    <div class="modal fade" id="venueModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content custom-rounded border-0 shadow-lg modal-anim">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold fs-4">Забронировать площадку</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="venueForm">
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-bold text-uppercase ms-2">Дата (Текст)</label>
+                            <input type="text" class="form-control rounded-pill px-3" id="vDate" placeholder="Например: 12 Сен 2026" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-bold text-uppercase ms-2">Название площадки (Зала)</label>
+                            <input type="text" class="form-control rounded-pill px-3" id="vName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-bold text-uppercase ms-2">Мероприятие</label>
+                            <input type="text" class="form-control rounded-pill px-3" id="vEvent" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted small fw-bold text-uppercase ms-2">Клиент</label>
+                                <input type="text" class="form-control rounded-pill px-3" id="vClient" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted small fw-bold text-uppercase ms-2">Статус</label>
+                                <select class="form-select rounded-pill px-3" id="vStatus">
+                                    <option value="Ожидает предоплату">Ожидает предоплату</option>
+                                    <option value="Оплачено">Оплачено</option>
+                                    <option value="Подтверждено">Подтверждено</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-brand-gold rounded-pill px-4 fw-bold" id="saveVenueBtn">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛКА 2: ДОБАВИТЬ ПОДРЯДЧИКА -->
+    <div class="modal fade" id="contractorModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content custom-rounded border-0 shadow-lg modal-anim">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold fs-4">Новый подрядчик</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="contractorForm">
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-bold text-uppercase ms-2">ФИО / Название компании</label>
+                            <input type="text" class="form-control rounded-pill px-3" id="cName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-bold text-uppercase ms-2">Профессия / Роль</label>
+                            <input type="text" class="form-control rounded-pill px-3" id="cRole" placeholder="Например: Фотограф" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-bold text-uppercase ms-2">Контактный телефон</label>
+                            <input type="text" class="form-control rounded-pill px-3" id="cPhone" placeholder="+7 (___) ___-__-__" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-bold text-uppercase ms-2">Иконка специализации</label>
+                            <select class="form-select rounded-pill px-3" id="cIcon">
+                                <option value="fa-user">Человек (Универсал)</option>
+                                <option value="fa-headphones">Звукорежиссер</option>
+                                <option value="fa-lightbulb">Световик</option>
+                                <option value="fa-video">Видео/Трансляция</option>
+                                <option value="fa-camera">Фотограф</option>
+                                <option value="fa-truck-fast">Водитель/Логист</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-brand-gold rounded-pill px-4 fw-bold" id="saveContractorBtn">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery и Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="venues.js"></script>

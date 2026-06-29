@@ -1,10 +1,9 @@
 $(document).ready(function() {
     
     // --------------------------------------------------
-    // 1. СМЕНА ТЕМЫ (Синхронизация с главной страницей)
+    // 1. ИКОНКА ТЕМЫ (Сама тема уже применена в <head>)
     // --------------------------------------------------
     let currentTheme = localStorage.getItem('crm_theme') || 'light';
-    $('html').attr('data-bs-theme', currentTheme);
     updateThemeIcon(currentTheme);
 
     $('#themeToggle').click(function() {
@@ -23,14 +22,20 @@ $(document).ready(function() {
     }
 
     // --------------------------------------------------
-    // 2. БАЗА ДАННЫХ: БРОНИРОВАНИЕ ЗАЛОВ
+    // 2. БАЗА ДАННЫХ: БРОНИРОВАНИЕ ЗАЛОВ (с LocalStorage)
     // --------------------------------------------------
-    let venuesData = [
+    let defaultVenues = [
         { date: "30 Июня 2026", venue: "Astana IT University, Assembly Hall", event: "Защита Практики", client: "Кафедра SE", status: "Подтверждено" },
         { date: "15 Июля 2026", venue: "Radisson Blu, Grand Ballroom", event: "IT Forum 2026", client: "TechCorp", status: "Оплачено" },
         { date: "22 Июля 2026", venue: "Hilton Astana, Зал А", event: "Свадьба (VIP)", client: "Частное лицо", status: "Ожидает предоплату" },
         { date: "05 Авг 2026", venue: "EXPO Congress Center", event: "Выставка TechExpo", client: "Министерство Цифровизации", status: "Подтверждено" }
     ];
+
+    let venuesData = JSON.parse(localStorage.getItem('crm_venues_v1')) || defaultVenues;
+
+    function saveVenues() {
+        localStorage.setItem('crm_venues_v1', JSON.stringify(venuesData));
+    }
 
     function renderVenues() {
         let tbody = $('#venuesTable');
@@ -59,16 +64,50 @@ $(document).ready(function() {
         });
     }
 
+    // Обработка кнопки "Сохранить" для Залов
+    $('#saveVenueBtn').click(function() {
+        let date = $('#vDate').val();
+        let name = $('#vName').val();
+        let event = $('#vEvent').val();
+        let client = $('#vClient').val();
+        let status = $('#vStatus').val();
+
+        if (!date || !name || !event) {
+            alert("Заполните дату, название и мероприятие!");
+            return;
+        }
+
+        venuesData.unshift({ // unshift добавляет в начало списка
+            date: date,
+            venue: name,
+            event: event,
+            client: client,
+            status: status
+        });
+
+        saveVenues();
+        renderVenues();
+        
+        $('#venueForm')[0].reset();
+        $('#venueModal').modal('hide');
+    });
+
     // --------------------------------------------------
-    // 3. БАЗА ДАННЫХ: ПОДРЯДЧИКИ (Contractors)
+    // 3. БАЗА ДАННЫХ: ПОДРЯДЧИКИ (с LocalStorage)
     // --------------------------------------------------
-    let contractorsData = [
+    let defaultContractors = [
         { name: "Иван Смирнов", role: "Главный звукорежиссер", phone: "+7 (777) 123-45-67", rating: 5, icon: "fa-headphones" },
         { name: "Айгерим Касымова", role: "Декоратор-флорист", phone: "+7 (701) 987-65-43", rating: 4, icon: "fa-seedling" },
         { name: "ТОО 'LightShow Pro'", role: "Художники по свету", phone: "+7 (7172) 55-44-33", rating: 5, icon: "fa-lightbulb" },
         { name: "Данияр Омаров", role: "LED-Инженер (Экраны)", phone: "+7 (747) 111-22-33", rating: 5, icon: "fa-tv" },
         { name: "Студия 'VideoArt'", role: "Видеооператоры / Трансляция", phone: "+7 (707) 555-88-99", rating: 4, icon: "fa-video" }
     ];
+
+    let contractorsData = JSON.parse(localStorage.getItem('crm_contractors_v1')) || defaultContractors;
+
+    function saveContractors() {
+        localStorage.setItem('crm_contractors_v1', JSON.stringify(contractorsData));
+    }
 
     function renderContractors() {
         let grid = $('#contractorsGrid');
@@ -102,7 +141,34 @@ $(document).ready(function() {
         });
     }
 
-    // Запускаем рендер
+    // Обработка кнопки "Сохранить" для Подрядчиков
+    $('#saveContractorBtn').click(function() {
+        let name = $('#cName').val();
+        let role = $('#cRole').val();
+        let phone = $('#cPhone').val();
+        let icon = $('#cIcon').val();
+
+        if (!name || !role) {
+            alert("Заполните Имя и Роль!");
+            return;
+        }
+
+        contractorsData.unshift({
+            name: name,
+            role: role,
+            phone: phone,
+            rating: 5, // Новым подрядчикам по умолчанию даем 5 звезд
+            icon: icon
+        });
+
+        saveContractors();
+        renderContractors();
+        
+        $('#contractorForm')[0].reset();
+        $('#contractorModal').modal('hide');
+    });
+
+    // Запускаем рендер при загрузке
     renderVenues();
     renderContractors();
 });
