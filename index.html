@@ -16,15 +16,28 @@
     <!-- Навигация -->
     <nav class="navbar navbar-expand-lg navbar-dark brand-navbar shadow-sm position-relative" style="z-index: 1000;">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#"><i class="fa-solid fa-calendar-check me-2"></i>AJ Events CRM</a>
-            <div class="d-flex align-items-center">
-                <span class="navbar-text text-white me-3">
-                    Менеджер: Ансар
-                </span>
-                <!-- Кнопка смены темы -->
-                <button class="btn btn-outline-light btn-sm rounded-circle position-relative" id="themeToggle" title="Сменить тему" style="width: 32px; height: 32px; z-index: 1000;">
-                    <i class="fa-solid fa-moon"></i>
-                </button>
+            <a class="navbar-brand" href="index.html"><i class="fa-solid fa-calendar-check me-2"></i>AJ Events CRM</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                    <li class="nav-item">
+                        <a class="nav-link active fw-bold" href="index.html"><i class="fa-solid fa-boxes-stacked me-1"></i> Склад</a>
+                    </li>
+                    <li class="nav-item">
+                        <!-- Ссылка на нашу новую страницу -->
+                        <a class="nav-link text-light" style="opacity: 0.7;" href="venues.html"><i class="fa-solid fa-building me-1"></i> Залы и Подрядчики</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center mt-2 mt-lg-0">
+                    <span class="navbar-text text-white me-3">
+                        Менеджер: Ансар
+                    </span>
+                    <button class="btn btn-outline-light btn-sm rounded-circle position-relative" id="themeToggle" title="Сменить тему" style="width: 32px; height: 32px; z-index: 1000;">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
