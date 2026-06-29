@@ -1,48 +1,59 @@
 $(document).ready(function() {
     
     // --------------------------------------------------
-    // 1. ТЁМНАЯ И СВЕТЛАЯ ТЕМА С ВОЛНОВОЙ АНИМАЦИЕЙ
+    // 1. ИДЕАЛЬНАЯ ВОЛНОВАЯ АНИМАЦИЯ ТЕМЫ (Telegram Style)
     // --------------------------------------------------
     let currentTheme = localStorage.getItem('crm_theme') || 'light';
     $('html').attr('data-bs-theme', currentTheme);
     updateThemeIcon(currentTheme);
 
     $('#themeToggle').click(function(e) {
-        // Защита от спама кликами (ждем пока закончится предыдущая анимация)
-        if ($('.theme-overlay').length > 0) return;
-
         let nextTheme = currentTheme === 'light' ? 'dark' : 'light';
-        // Цвет круга зависит от того, какую тему мы включаем
-        let overlayColor = nextTheme === 'dark' ? '#121212' : '#f8f9fa';
 
-        // Создаем круг
-        let $overlay = $('<div class="theme-overlay"></div>');
-        $overlay.css({
-            left: e.clientX + 'px',
-            top: e.clientY + 'px',
-            backgroundColor: overlayColor
-        });
-
-        $('body').append($overlay);
-
-        // Магия JS: заставляем браузер применить стили до начала анимации
-        $overlay[0].offsetWidth;
-
-        // Запускаем анимацию расширения круга
-        $overlay.addClass('expand');
-
-        // Ждем пока круг закроет экран, затем переключаем реальную тему
-        setTimeout(function() {
+        // Функция, которая физически меняет тему
+        function changeTheme() {
             currentTheme = nextTheme;
             $('html').attr('data-bs-theme', currentTheme);
             localStorage.setItem('crm_theme', currentTheme);
             updateThemeIcon(currentTheme);
+        }
 
-            // Плавно растворяем круг и удаляем его из кода
-            $overlay.fadeOut(300, function() {
-                $(this).remove();
+        // Если браузер поддерживает современную отрисовку (Chrome/Edge)
+        if (document.startViewTransition) {
+            // Высчитываем координаты клика и радиус круга до краев экрана
+            const x = e.clientX;
+            const y = e.clientY;
+            const endRadius = Math.hypot(
+                Math.max(x, window.innerWidth - x),
+                Math.max(y, window.innerHeight - y)
+            );
+
+            // Запускаем снимок экрана и меняем тему
+            const transition = document.startViewTransition(changeTheme);
+
+            // Рисуем круг маской, чтобы красиво показать новую тему со всеми данными!
+            transition.ready.then(() => {
+                const clipPath = [
+                    `circle(0px at ${x}px ${y}px)`,
+                    `circle(${endRadius}px at ${x}px ${y}px)`
+                ];
+
+                document.documentElement.animate(
+                    {
+                        clipPath: nextTheme === 'dark' ? clipPath : [...clipPath].reverse()
+                    },
+                    {
+                        duration: 500,
+                        easing: 'ease-in-out',
+                        // Указываем, какой слой расширяется, а какой сжимается
+                        pseudoElement: nextTheme === 'dark' ? '::view-transition-new(root)' : '::view-transition-old(root)'
+                    }
+                );
             });
-        }, 500); // 500ms соответствует времени анимации в CSS
+        } else {
+            // Запасной вариант для старых браузеров (Safari и т.д.)
+            changeTheme();
+        }
     });
 
     function updateThemeIcon(theme) {

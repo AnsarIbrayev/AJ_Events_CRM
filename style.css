@@ -5,11 +5,6 @@
     --brand-gold-hover: #b09556;
 }
 
-/* Плавная смена всех цветов на странице при смене темы */
-body * {
-    transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease; 
-}
-
 /* Глобальное скругление */
 .custom-rounded {
     border-radius: 20px !important;
@@ -55,25 +50,21 @@ body * {
 }
 
 /* ------------------------------------------- */
-/* ВОЛНОВАЯ АНИМАЦИЯ СМЕНЫ ТЕМЫ (Telegram)     */
+/* VIEW TRANSITIONS API (Для волны смены темы) */
 /* ------------------------------------------- */
-.theme-overlay {
-    position: fixed;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    pointer-events: none; /* Чтобы волна не блокировала клики */
-    z-index: 99999;
-    transform: translate(-50%, -50%) scale(1);
-    /* Кривая Безье для резкого, но плавного расширения */
-    transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
 }
-.theme-overlay.expand {
-    /* Увеличиваем круг в 300 раз, чтобы он покрыл любой экран */
-    transform: translate(-50%, -50%) scale(300); 
-}
+::view-transition-old(root) { z-index: 1; }
+::view-transition-new(root) { z-index: 2; }
+[data-bs-theme="dark"]::view-transition-old(root) { z-index: 2; }
+[data-bs-theme="dark"]::view-transition-new(root) { z-index: 1; }
 
-/* Анимация строк таблицы */
+/* ------------------------------------------- */
+/* АНИМАЦИИ (Магия UI)                         */
+/* ------------------------------------------- */
 .animated-row {
     animation: slideInRow 0.4s ease-out forwards;
     opacity: 0;
@@ -83,7 +74,6 @@ body * {
     100% { opacity: 1; transform: translateX(0); }
 }
 
-/* Анимация выпадающих списков (Пружинка) */
 .custom-dropdown-menu {
     border-radius: 16px !important;
     overflow: hidden;
@@ -105,7 +95,6 @@ body * {
     color: white;
 }
 
-/* Анимация появления модальных окон */
 .modal.fade .modal-dialog {
     transition: transform 0.3s ease-out;
     transform: scale(0.8);
@@ -129,7 +118,6 @@ body * {
     padding-bottom: 16px;
 }
 
-/* Кастомные цвета для бейджей статусов */
 .badge { border-radius: 10px; padding: 6px 10px; font-weight: 600; }
 .badge-custom-0 { background-color: #8e44ad; color: #fff; } 
 .badge-custom-1 { background-color: #e67e22; color: #fff; } 
