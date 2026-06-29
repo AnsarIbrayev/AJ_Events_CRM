@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AJ Events - Залы и Подрядчики</title>
     
-    <!-- АНТИ-БЛИК СКРИПТ -->
     <script>
         let savedTheme = localStorage.getItem('crm_theme') || 'light';
         document.documentElement.setAttribute('data-bs-theme', savedTheme);
@@ -17,7 +16,6 @@
 </head>
 <body class="bg-body-tertiary">
 
-    <!-- Навигация -->
     <nav class="navbar navbar-expand-lg navbar-dark brand-navbar shadow-sm position-relative" style="z-index: 1000;">
         <div class="container-fluid">
             <a class="navbar-brand" href="index.html"><i class="fa-solid fa-calendar-check me-2"></i>AJ Events CRM</a>
@@ -60,7 +58,6 @@
 
         <div class="tab-content" id="pills-tabContent">
             
-            <!-- ВКЛАДКА 1: БРОНИРОВАНИЕ ЗАЛОВ -->
             <div class="tab-pane fade show active" id="pills-venues" role="tabpanel">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h3 class="fw-bold mb-0">Расписание площадок</h3>
@@ -73,7 +70,6 @@
                         <table class="table table-hover mb-0 align-middle">
                             <thead class="custom-thead">
                                 <tr>
-                                    <!-- Добавлены классы sortable и иконки сортировки -->
                                     <th class="ps-4 sortable user-select-none" data-col="date" style="cursor: pointer;" title="Сортировать по дате">
                                         Дата <i class="fa-solid fa-sort ms-1 opacity-50 sort-icon"></i>
                                     </th>
@@ -95,7 +91,6 @@
                 </div>
             </div>
 
-            <!-- ВКЛАДКА 2: ПОДРЯДЧИКИ -->
             <div class="tab-pane fade" id="pills-contractors" role="tabpanel">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h3 class="fw-bold mb-0">Наши подрядчики (Contractors)</h3>
@@ -109,7 +104,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА 1: ЗАЛЫ -->
     <div class="modal fade" id="venueModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content custom-rounded border-0 shadow-lg modal-anim">
@@ -122,7 +116,6 @@
                         <input type="hidden" id="vId">
                         <div class="mb-3">
                             <label class="form-label text-muted small fw-bold text-uppercase ms-2">Дата</label>
-                            <!-- ТЕПЕРЬ ЗДЕСЬ НАСТОЯЩИЙ КАЛЕНДАРЬ (type="date") -->
                             <input type="date" class="form-control rounded-pill px-3" id="vDate" required>
                         </div>
                         <div class="mb-3">
@@ -158,7 +151,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА 2: ПОДРЯДЧИКИ -->
     <div class="modal fade" id="contractorModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content custom-rounded border-0 shadow-lg modal-anim">
@@ -203,7 +195,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО УДАЛЕНИЯ -->
     <div class="modal fade" id="deleteModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content custom-rounded border-0 shadow-lg modal-anim text-center p-4">

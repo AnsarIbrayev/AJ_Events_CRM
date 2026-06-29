@@ -5,22 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AJ Events - Web-CRM</title>
     
-    <!-- АНТИ-БЛИК (FOUC) СКРИПТ: Применяет темную тему до загрузки страницы -->
     <script>
         let savedTheme = localStorage.getItem('crm_theme') || 'light';
         document.documentElement.setAttribute('data-bs-theme', savedTheme);
     </script>
 
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome для иконок -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Кастомные стили -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-body-tertiary">
 
-    <!-- Навигация -->
     <nav class="navbar navbar-expand-lg navbar-dark brand-navbar shadow-sm position-relative" style="z-index: 1000;">
         <div class="container-fluid">
             <a class="navbar-brand" href="index.html"><i class="fa-solid fa-calendar-check me-2"></i>AJ Events CRM</a>
@@ -33,13 +28,12 @@
                         <a class="nav-link active fw-bold" href="index.html"><i class="fa-solid fa-boxes-stacked me-1"></i> Склад</a>
                     </li>
                     <li class="nav-item">
-                        <!-- Ссылка на нашу новую страницу -->
                         <a class="nav-link text-light" style="opacity: 0.7;" href="venues.html"><i class="fa-solid fa-building me-1"></i> Залы и Подрядчики</a>
                     </li>
                 </ul>
                 <div class="d-flex align-items-center mt-2 mt-lg-0">
                     <span class="navbar-text text-white me-3">
-                        Менеджер: Mr. Ansamo
+                        Менеджер: Akerke
                     </span>
                     <button class="btn btn-outline-light btn-sm rounded-circle position-relative" id="themeToggle" title="Сменить тему" style="width: 32px; height: 32px; z-index: 1000;">
                         <i class="fa-solid fa-moon"></i>
@@ -49,11 +43,9 @@
         </div>
     </nav>
 
-    <!-- Основной контент -->
     <div class="container mt-4 position-relative" style="z-index: 10;">
         <h2 class="mb-4 fw-bold">Складской учет оборудования</h2>
 
-        <!-- Статистика -->
         <div class="row mb-4">
             <div class="col-md-4">
                 <div class="card brand-card-blue text-white mb-3 shadow-sm custom-rounded border-0 card-hover">
@@ -73,7 +65,6 @@
             </div>
         </div>
 
-        <!-- Управление таблицей и ФИЛЬТРЫ -->
         <div class="card shadow-sm mb-4 border-0 bg-body custom-rounded">
             <div class="card-body row align-items-center g-3 p-4">
                 <div class="col-md-3">
@@ -110,7 +101,6 @@
             </div>
         </div>
 
-        <!-- Таблица инвентаря -->
         <div class="card shadow-sm border-0 bg-body custom-rounded overflow-hidden mb-5">
             <div class="card-body p-0 table-responsive">
                 <table class="table table-hover mb-0 align-middle">
@@ -126,14 +116,12 @@
                         </tr>
                     </thead>
                     <tbody id="inventoryTable">
-                        <!-- Данные загрузятся через jQuery -->
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Модальное окно "Добавить / Изменить" -->
     <div class="modal fade" id="itemModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content custom-rounded border-0 shadow-lg modal-anim">
@@ -178,7 +166,6 @@
         </div>
     </div>
 
-    <!-- КРАСИВОЕ Модальное окно "Удалить" -->
     <div class="modal fade" id="deleteModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content custom-rounded border-0 shadow-lg modal-anim text-center p-4">
@@ -200,7 +187,6 @@
         </div>
     </div>
 
-    <!-- jQuery и Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="app.js"></script>

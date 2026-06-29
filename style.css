@@ -1,23 +1,17 @@
-/* Корпоративные цвета AJ Events Company (Премиум стиль) */
 :root {
     --brand-navy: #1a252c;     
     --brand-gold: #c5a861;     
     --brand-gold-hover: #b09556;
 }
 
-/* ------------------------------------------- */
-/* ПЛАВНАЯ СМЕНА ТЕМЫ (100% надежно везде)     */
-/* ------------------------------------------- */
 body, .card, .modal-content, .form-control, .btn, .dropdown-menu, th, td, span, i, div {
     transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
 }
 
-/* Глобальное скругление */
 .custom-rounded {
     border-radius: 20px !important;
 }
 
-/* Навигация */
 .brand-navbar {
     background-color: var(--brand-navy) !important;
 }
@@ -27,7 +21,6 @@ body, .card, .modal-content, .form-control, .btn, .dropdown-menu, th, td, span, 
     letter-spacing: 0.5px;
 }
 
-/* Карточки статистики */
 .brand-card-blue {
     background: linear-gradient(135deg, #2b3945, var(--brand-navy));
 }
@@ -42,7 +35,6 @@ body, .card, .modal-content, .form-control, .btn, .dropdown-menu, th, td, span, 
     box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
 }
 
-/* Кнопки */
 .btn-brand-gold {
     background-color: var(--brand-gold);
     border-color: var(--brand-gold);
@@ -55,9 +47,6 @@ body, .card, .modal-content, .form-control, .btn, .dropdown-menu, th, td, span, 
     transform: scale(1.02);
 }
 
-/* ------------------------------------------- */
-/* АНИМАЦИИ ПОЯВЛЕНИЯ ЭЛЕМЕНТОВ                */
-/* ------------------------------------------- */
 .animated-row {
     animation: slideInRow 0.4s ease-out forwards;
     opacity: 0;
@@ -95,9 +84,6 @@ body, .card, .modal-content, .form-control, .btn, .dropdown-menu, th, td, span, 
     transform: scale(1);
 }
 
-/* ------------------------------------------- */
-/* Стилизация таблицы                          */
-/* ------------------------------------------- */
 .table-hover tbody tr:hover {
     cursor: pointer;
     background-color: rgba(197, 168, 97, 0.05) !important; 
@@ -117,9 +103,6 @@ body, .card, .modal-content, .form-control, .btn, .dropdown-menu, th, td, span, 
 .badge-custom-3 { background-color: #2980b9; color: #fff; } 
 .badge-custom-4 { background-color: #e84393; color: #fff; } 
 
-/* ------------------------------------------- */
-/* Адаптация под ТЁМНУЮ ТЕМУ                   */
-/* ------------------------------------------- */
 [data-bs-theme="dark"] .custom-thead th {
     background-color: #24292d !important;
     color: #e9ecef !important;

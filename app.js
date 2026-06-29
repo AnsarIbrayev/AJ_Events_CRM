@@ -1,15 +1,10 @@
 $(document).ready(function() {
     
-    // --------------------------------------------------
-    // 1. СМЕНА ТЕМЫ (Мгновенно + Плавный CSS Fade)
-    // --------------------------------------------------
     let currentTheme = localStorage.getItem('crm_theme') || 'light';
     $('html').attr('data-bs-theme', currentTheme);
     updateThemeIcon(currentTheme);
 
     $('#themeToggle').click(function(e) {
-        // Тема меняется мгновенно, без задержек. 
-        // А CSS делает так, чтобы цвета перетекали плавно.
         currentTheme = currentTheme === 'light' ? 'dark' : 'light';
         $('html').attr('data-bs-theme', currentTheme);
         localStorage.setItem('crm_theme', currentTheme);
@@ -24,9 +19,6 @@ $(document).ready(function() {
         }
     }
 
-    // --------------------------------------------------
-    // 2. ИНИЦИАЛИЗАЦИЯ БАЗЫ ДАННЫХ
-    // --------------------------------------------------
     let defaultData = [
         { id: 104, name: "Проектор Epson EB-X41", category: "Видео", desc: "В кейсе, с пультом", qty: 3, status: "В ремонте" },
         { id: 112, name: "Баннер Roll-up 2х0.8м", category: "Декорации", desc: "Каркас без полотна", qty: 15, status: "На складе" },
@@ -64,9 +56,6 @@ $(document).ready(function() {
         updateDynamicLists(); 
     }
 
-    // --------------------------------------------------
-    // 3. АЛГОРИТМ ПРИКОЛЬНЫХ ЦВЕТОВ
-    // --------------------------------------------------
     function getStatusBadge(status) {
         if (status === 'На складе') return '<span class="badge bg-success shadow-sm">На складе</span>';
         if (status === 'На мероприятии') return '<span class="badge bg-warning text-dark shadow-sm">На мероприятии</span>';
@@ -80,9 +69,6 @@ $(document).ready(function() {
         return `<span class="badge badge-custom-${colorIndex} shadow-sm">${status}</span>`;
     }
 
-    // --------------------------------------------------
-    // 4. ДИНАМИЧЕСКИЕ ФИЛЬТРЫ
-    // --------------------------------------------------
     function updateDynamicLists() {
         let categories = new Set();
         let statuses = new Set();
@@ -128,9 +114,6 @@ $(document).ready(function() {
         });
     }
 
-    // --------------------------------------------------
-    // 5. ОТРИСОВКА ТАБЛИЦЫ С АНИМАЦИЕЙ
-    // --------------------------------------------------
     function renderTable(data) {
         let tbody = $('#inventoryTable');
         tbody.empty();
@@ -171,9 +154,6 @@ $(document).ready(function() {
         $('#availableItems').text(available);
     }
 
-    // --------------------------------------------------
-    // 6. ФИЛЬТРАЦИЯ
-    // --------------------------------------------------
     function applyFilters() {
         let searchText = $('#searchInput').val().toLowerCase();
         let catFilter = $('#filterCategory').val(); 
@@ -193,9 +173,6 @@ $(document).ready(function() {
 
     $('#searchInput').on('keyup', applyFilters);
 
-    // --------------------------------------------------
-    // 7. ДОБАВЛЕНИЕ И РЕДАКТИРОВАНИЕ
-    // --------------------------------------------------
     $('#openAddModalBtn').click(function() {
         $('#modalTitle').text('Новое оборудование');
         $('#itemForm')[0].reset();
@@ -263,9 +240,6 @@ $(document).ready(function() {
         applyFilters(); 
     });
 
-    // --------------------------------------------------
-    // 8. КРАСИВОЕ УДАЛЕНИЕ ЧЕРЕЗ МОДАЛЬНОЕ ОКНО
-    // --------------------------------------------------
     $('#inventoryTable').on('click', '.delete-btn', function() {
         let idToDelete = $(this).data('id');
         $('#deleteItemId').val(idToDelete); 
@@ -281,7 +255,6 @@ $(document).ready(function() {
         $('#deleteModal').modal('hide'); 
     });
 
-    // Запуск
     updateDynamicLists();
     renderTable(inventory);
 });

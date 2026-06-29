@@ -1,8 +1,5 @@
 $(document).ready(function() {
     
-    // --------------------------------------------------
-    // 1. ИКОНКА ТЕМЫ
-    // --------------------------------------------------
     let currentTheme = localStorage.getItem('crm_theme') || 'light';
     updateThemeIcon(currentTheme);
 
@@ -21,9 +18,6 @@ $(document).ready(function() {
         }
     }
 
-    // --------------------------------------------------
-    // 2. БАЗА ДАННЫХ: ЗАЛЫ (Сортировка и даты)
-    // --------------------------------------------------
     let defaultVenues = [
         { id: 1, date: "2026-06-30", venue: "Astana IT University, Assembly Hall", event: "Защита Практики", client: "Кафедра SE", status: "Подтверждено" },
         { id: 2, date: "2026-07-15", venue: "Radisson Blu, Grand Ballroom", event: "IT Forum 2026", client: "TechCorp", status: "Оплачено" },
@@ -42,12 +36,10 @@ $(document).ready(function() {
         localStorage.setItem('crm_nextVenueId_v3', nextVenueId.toString());
     }
 
-    // ИЗМЕНЕНО: Конвертер теперь выдает формат ДД.ММ.ГГГГ (Например: 30.06.2026)
     function formatDate(isoString) {
         if (!isoString) return '';
         let parts = isoString.split('-');
         if (parts.length !== 3) return isoString;
-        // Берем День (parts[2]), Месяц (parts[1]) и Год (parts[0])
         return `${parts[2]}.${parts[1]}.${parts[0]}`;
     }
 
@@ -90,7 +82,7 @@ $(document).ready(function() {
             }
 
             let animDelay = index * 0.05;
-            let displayDate = formatDate(item.date); // Применяем новый цифровой формат
+            let displayDate = formatDate(item.date);
             
             let row = `
                 <tr class="animated-row" style="animation-delay: ${animDelay}s">
@@ -173,9 +165,6 @@ $(document).ready(function() {
         $('#venueModal').modal('hide');
     });
 
-    // --------------------------------------------------
-    // 3. БАЗА ДАННЫХ: ПОДРЯДЧИКИ
-    // --------------------------------------------------
     let defaultContractors = [
         { id: 1, name: "Иван Смирнов", role: "Главный звукорежиссер", phone: "+7 (777) 123-45-67", rating: 5, icon: "fa-headphones" },
         { id: 2, name: "Айгерим Касымова", role: "Декоратор-флорист", phone: "+7 (701) 987-65-43", rating: 4, icon: "fa-seedling" },
@@ -293,9 +282,6 @@ $(document).ready(function() {
         $('#contractorModal').modal('hide');
     });
 
-    // --------------------------------------------------
-    // 4. УНИВЕРСАЛЬНОЕ УДАЛЕНИЕ
-    // --------------------------------------------------
     $('#venuesTable').on('click', '.delete-venue-btn', function() {
         $('#deleteTargetType').val('venue');
         $('#deleteTargetId').val($(this).data('id'));
@@ -325,7 +311,6 @@ $(document).ready(function() {
         $('#deleteModal').modal('hide');
     });
 
-    // Запускаем первичный рендер
     renderVenues();
     renderContractors();
 });
