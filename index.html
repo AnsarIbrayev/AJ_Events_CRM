@@ -14,14 +14,15 @@
 <body class="bg-body-tertiary">
 
     <!-- Навигация -->
-    <nav class="navbar navbar-expand-lg navbar-dark brand-navbar shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-dark brand-navbar shadow-sm position-relative" style="z-index: 1000;">
         <div class="container-fluid">
             <a class="navbar-brand" href="#"><i class="fa-solid fa-calendar-check me-2"></i>AJ Events CRM</a>
             <div class="d-flex align-items-center">
                 <span class="navbar-text text-white me-3">
                     Менеджер: Ансар
                 </span>
-                <button class="btn btn-outline-light btn-sm rounded-circle" id="themeToggle" title="Сменить тему" style="width: 32px; height: 32px;">
+                <!-- Кнопка смены темы -->
+                <button class="btn btn-outline-light btn-sm rounded-circle position-relative" id="themeToggle" title="Сменить тему" style="width: 32px; height: 32px; z-index: 1000;">
                     <i class="fa-solid fa-moon"></i>
                 </button>
             </div>
@@ -29,7 +30,7 @@
     </nav>
 
     <!-- Основной контент -->
-    <div class="container mt-4">
+    <div class="container mt-4 position-relative" style="z-index: 10;">
         <h2 class="mb-4 fw-bold">Складской учет оборудования</h2>
 
         <!-- Статистика -->
@@ -59,30 +60,24 @@
                     <input type="text" id="searchInput" class="form-control rounded-pill px-4" placeholder="Поиск по названию...">
                 </div>
                 
-                <!-- Анимированный кастомный фильтр категорий -->
                 <div class="col-md-3">
                     <div class="dropdown w-100">
                         <button class="btn btn-light w-100 text-start d-flex justify-content-between align-items-center rounded-pill px-4 shadow-sm custom-select-btn" type="button" data-bs-toggle="dropdown" id="catBtn">
                             <span id="catText">Все категории</span>
                             <i class="fa-solid fa-chevron-down text-muted small"></i>
                         </button>
-                        <ul class="dropdown-menu w-100 shadow-lg border-0 custom-dropdown-menu dropdown-anim" id="filterCategoryMenu">
-                            <!-- Сюда добавятся категории -->
-                        </ul>
+                        <ul class="dropdown-menu w-100 shadow-lg border-0 custom-dropdown-menu dropdown-anim" id="filterCategoryMenu"></ul>
                     </div>
                     <input type="hidden" id="filterCategory" value="All">
                 </div>
 
-                <!-- Анимированный кастомный фильтр статусов -->
                 <div class="col-md-3">
                     <div class="dropdown w-100">
                         <button class="btn btn-light w-100 text-start d-flex justify-content-between align-items-center rounded-pill px-4 shadow-sm custom-select-btn" type="button" data-bs-toggle="dropdown" id="statBtn">
                             <span id="statText">Все статусы</span>
                             <i class="fa-solid fa-chevron-down text-muted small"></i>
                         </button>
-                        <ul class="dropdown-menu w-100 shadow-lg border-0 custom-dropdown-menu dropdown-anim" id="filterStatusMenu">
-                            <!-- Сюда добавятся статусы -->
-                        </ul>
+                        <ul class="dropdown-menu w-100 shadow-lg border-0 custom-dropdown-menu dropdown-anim" id="filterStatusMenu"></ul>
                     </div>
                     <input type="hidden" id="filterStatus" value="All">
                 </div>
@@ -96,7 +91,7 @@
         </div>
 
         <!-- Таблица инвентаря -->
-        <div class="card shadow-sm border-0 bg-body custom-rounded overflow-hidden">
+        <div class="card shadow-sm border-0 bg-body custom-rounded overflow-hidden mb-5">
             <div class="card-body p-0 table-responsive">
                 <table class="table table-hover mb-0 align-middle">
                     <thead class="custom-thead">
@@ -111,14 +106,14 @@
                         </tr>
                     </thead>
                     <tbody id="inventoryTable">
-                        <!-- Данные будут загружаться через jQuery -->
+                        <!-- Данные загрузятся через jQuery -->
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Универсальное Модальное окно -->
+    <!-- Модальное окно "Добавить / Изменить" -->
     <div class="modal fade" id="itemModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content custom-rounded border-0 shadow-lg modal-anim">
@@ -158,6 +153,29 @@
                 <div class="modal-footer border-0 pt-0">
                     <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Отмена</button>
                     <button type="button" class="btn btn-brand-gold rounded-pill px-4 fw-bold" id="saveItemBtn">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- КРАСИВОЕ Модальное окно "Удалить" -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content custom-rounded border-0 shadow-lg modal-anim text-center p-4">
+                <div class="modal-body p-0">
+                    <div class="mb-3">
+                        <!-- Большая иконка корзины с кругом -->
+                        <div class="d-inline-flex align-items-center justify-content-center bg-danger bg-opacity-10 text-danger rounded-circle" style="width: 80px; height: 80px;">
+                            <i class="fa-solid fa-trash-can fs-1"></i>
+                        </div>
+                    </div>
+                    <h4 class="fw-bold mb-2">Удалить вещь?</h4>
+                    <p class="text-muted mb-4">Эта позиция будет безвозвратно удалена из базы склада.</p>
+                    <input type="hidden" id="deleteItemId">
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-danger rounded-pill fw-bold py-2" id="confirmDeleteBtn">Да, удалить</button>
+                        <button type="button" class="btn btn-light rounded-pill py-2" data-bs-dismiss="modal">Отмена</button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,17 +1,48 @@
 $(document).ready(function() {
     
     // --------------------------------------------------
-    // 1. ТЁМНАЯ И СВЕТЛАЯ ТЕМА (DARK MODE)
+    // 1. ТЁМНАЯ И СВЕТЛАЯ ТЕМА С ВОЛНОВОЙ АНИМАЦИЕЙ
     // --------------------------------------------------
     let currentTheme = localStorage.getItem('crm_theme') || 'light';
     $('html').attr('data-bs-theme', currentTheme);
     updateThemeIcon(currentTheme);
 
-    $('#themeToggle').click(function() {
-        currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-        $('html').attr('data-bs-theme', currentTheme);
-        localStorage.setItem('crm_theme', currentTheme);
-        updateThemeIcon(currentTheme);
+    $('#themeToggle').click(function(e) {
+        // Защита от спама кликами (ждем пока закончится предыдущая анимация)
+        if ($('.theme-overlay').length > 0) return;
+
+        let nextTheme = currentTheme === 'light' ? 'dark' : 'light';
+        // Цвет круга зависит от того, какую тему мы включаем
+        let overlayColor = nextTheme === 'dark' ? '#121212' : '#f8f9fa';
+
+        // Создаем круг
+        let $overlay = $('<div class="theme-overlay"></div>');
+        $overlay.css({
+            left: e.clientX + 'px',
+            top: e.clientY + 'px',
+            backgroundColor: overlayColor
+        });
+
+        $('body').append($overlay);
+
+        // Магия JS: заставляем браузер применить стили до начала анимации
+        $overlay[0].offsetWidth;
+
+        // Запускаем анимацию расширения круга
+        $overlay.addClass('expand');
+
+        // Ждем пока круг закроет экран, затем переключаем реальную тему
+        setTimeout(function() {
+            currentTheme = nextTheme;
+            $('html').attr('data-bs-theme', currentTheme);
+            localStorage.setItem('crm_theme', currentTheme);
+            updateThemeIcon(currentTheme);
+
+            // Плавно растворяем круг и удаляем его из кода
+            $overlay.fadeOut(300, function() {
+                $(this).remove();
+            });
+        }, 500); // 500ms соответствует времени анимации в CSS
     });
 
     function updateThemeIcon(theme) {
@@ -23,7 +54,7 @@ $(document).ready(function() {
     }
 
     // --------------------------------------------------
-    // 2. ИНИЦИАЛИЗАЦИЯ БОЛЬШОЙ БАЗЫ ДАННЫХ
+    // 2. ИНИЦИАЛИЗАЦИЯ БАЗЫ ДАННЫХ
     // --------------------------------------------------
     let defaultData = [
         { id: 104, name: "Проектор Epson EB-X41", category: "Видео", desc: "В кейсе, с пультом", qty: 3, status: "В ремонте" },
@@ -53,17 +84,17 @@ $(document).ready(function() {
         { id: 125, name: "Суфлер для спикера", category: "Видео", desc: "С монитором 24 дюйма", qty: 1, status: "На складе" }
     ];
 
-    let inventory = JSON.parse(localStorage.getItem('crm_inventory_v7')) || defaultData;
-    let nextId = parseInt(localStorage.getItem('crm_nextId_v7')) || 126;
+    let inventory = JSON.parse(localStorage.getItem('crm_inventory_v8')) || defaultData;
+    let nextId = parseInt(localStorage.getItem('crm_nextId_v8')) || 126;
 
     function saveDataToStorage() {
-        localStorage.setItem('crm_inventory_v7', JSON.stringify(inventory));
-        localStorage.setItem('crm_nextId_v7', nextId.toString());
+        localStorage.setItem('crm_inventory_v8', JSON.stringify(inventory));
+        localStorage.setItem('crm_nextId_v8', nextId.toString());
         updateDynamicLists(); 
     }
 
     // --------------------------------------------------
-    // 3. АЛГОРИТМ ПРИКОЛЬНЫХ ЦВЕТОВ ДЛЯ НОВЫХ СТАТУСОВ
+    // 3. АЛГОРИТМ ПРИКОЛЬНЫХ ЦВЕТОВ
     // --------------------------------------------------
     function getStatusBadge(status) {
         if (status === 'На складе') return '<span class="badge bg-success shadow-sm">На складе</span>';
@@ -79,7 +110,7 @@ $(document).ready(function() {
     }
 
     // --------------------------------------------------
-    // 4. ДИНАМИЧЕСКИЕ КАТЕГОРИИ И СТАТУСЫ (КАСТОМНЫЙ DROPDOWN)
+    // 4. ДИНАМИЧЕСКИЕ ФИЛЬТРЫ
     // --------------------------------------------------
     function updateDynamicLists() {
         let categories = new Set();
@@ -90,13 +121,11 @@ $(document).ready(function() {
             if(item.status) statuses.add(item.status);
         });
 
-        // Обновляем datalist в модалке
         $('#categoryList').empty();
         categories.forEach(c => $('#categoryList').append(`<option value="${c}">`));
         $('#statusList').empty();
         statuses.forEach(s => $('#statusList').append(`<option value="${s}">`));
 
-        // Обновляем крутые анимированные фильтры
         let catMenu = $('#filterCategoryMenu');
         catMenu.empty().append(`<li><a class="dropdown-item category-item active" href="#" data-val="All">Все категории</a></li>`);
         categories.forEach(c => catMenu.append(`<li><a class="dropdown-item category-item" href="#" data-val="${c}">${c}</a></li>`));
@@ -105,7 +134,6 @@ $(document).ready(function() {
         statMenu.empty().append(`<li><a class="dropdown-item status-item active" href="#" data-val="All">Все статусы</a></li>`);
         statuses.forEach(s => statMenu.append(`<li><a class="dropdown-item status-item" href="#" data-val="${s}">${s}</a></li>`));
 
-        // Назначаем клики для созданных элементов
         bindDropdownClicks();
     }
 
@@ -114,8 +142,8 @@ $(document).ready(function() {
             e.preventDefault();
             $('.category-item').removeClass('active');
             $(this).addClass('active');
-            $('#catText').text($(this).text()); // Меняем текст на кнопке
-            $('#filterCategory').val($(this).data('val')); // Записываем в скрытый инпут
+            $('#catText').text($(this).text()); 
+            $('#filterCategory').val($(this).data('val')); 
             applyFilters();
         });
 
@@ -144,8 +172,6 @@ $(document).ready(function() {
         data.forEach(function(item, index) { 
             let statusBadge = getStatusBadge(item.status); 
             let description = item.desc ? item.desc : '<span class="text-muted">-</span>';
-            
-            // Задержка анимации для каждой следующей строки (создает эффект волны)
             let animDelay = (index % 15) * 0.04; 
 
             let row = `
@@ -179,8 +205,8 @@ $(document).ready(function() {
     // --------------------------------------------------
     function applyFilters() {
         let searchText = $('#searchInput').val().toLowerCase();
-        let catFilter = $('#filterCategory').val(); // Берем из скрытого инпута
-        let statFilter = $('#filterStatus').val();  // Берем из скрытого инпута
+        let catFilter = $('#filterCategory').val(); 
+        let statFilter = $('#filterStatus').val();  
 
         let filteredData = inventory.filter(function(item) {
             let matchText = item.name.toLowerCase().includes(searchText) || 
@@ -258,7 +284,6 @@ $(document).ready(function() {
         saveDataToStorage();
         $('#itemModal').modal('hide');
         
-        // Сбрасываем фильтры
         $('#searchInput').val('');
         $('#filterCategory').val('All');
         $('#catText').text('Все категории');
@@ -268,15 +293,23 @@ $(document).ready(function() {
     });
 
     // --------------------------------------------------
-    // 8. УДАЛЕНИЕ
+    // 8. КРАСИВОЕ УДАЛЕНИЕ ЧЕРЕЗ МОДАЛЬНОЕ ОКНО
     // --------------------------------------------------
+    // Открываем модалку удаления, передавая ID
     $('#inventoryTable').on('click', '.delete-btn', function() {
-        if (confirm("Удалить вещь навсегда?")) {
-            let idToDelete = $(this).data('id');
-            inventory = inventory.filter(item => item.id !== idToDelete);
-            saveDataToStorage(); 
-            applyFilters(); 
-        }
+        let idToDelete = $(this).data('id');
+        $('#deleteItemId').val(idToDelete); // Сохраняем ID в скрытый инпут
+        $('#deleteModal').modal('show');
+    });
+
+    // Обрабатываем клик по кнопке "Да, удалить" внутри окна
+    $('#confirmDeleteBtn').click(function() {
+        let idToDelete = $('#deleteItemId').val();
+        inventory = inventory.filter(item => item.id != idToDelete); // Удаляем
+        
+        saveDataToStorage(); 
+        applyFilters(); 
+        $('#deleteModal').modal('hide'); // Закрываем окно
     });
 
     // Запуск

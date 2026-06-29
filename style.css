@@ -5,12 +5,12 @@
     --brand-gold-hover: #b09556;
 }
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease; 
+/* Плавная смена всех цветов на странице при смене темы */
+body * {
+    transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease; 
 }
 
-/* Глобальное скругление (Без острых углов) */
+/* Глобальное скругление */
 .custom-rounded {
     border-radius: 20px !important;
 }
@@ -45,7 +45,7 @@ body {
     background-color: var(--brand-gold);
     border-color: var(--brand-gold);
     color: #fff;
-    transition: all 0.3s ease;
+    transition: transform 0.2s ease, background-color 0.3s ease;
 }
 .btn-brand-gold:hover {
     background-color: var(--brand-gold-hover);
@@ -55,8 +55,23 @@ body {
 }
 
 /* ------------------------------------------- */
-/* АНИМАЦИИ (Магия UI)                         */
+/* ВОЛНОВАЯ АНИМАЦИЯ СМЕНЫ ТЕМЫ (Telegram)     */
 /* ------------------------------------------- */
+.theme-overlay {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    pointer-events: none; /* Чтобы волна не блокировала клики */
+    z-index: 99999;
+    transform: translate(-50%, -50%) scale(1);
+    /* Кривая Безье для резкого, но плавного расширения */
+    transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+.theme-overlay.expand {
+    /* Увеличиваем круг в 300 раз, чтобы он покрыл любой экран */
+    transform: translate(-50%, -50%) scale(300); 
+}
 
 /* Анимация строк таблицы */
 .animated-row {
@@ -68,7 +83,7 @@ body {
     100% { opacity: 1; transform: translateX(0); }
 }
 
-/* Анимация кастомных выпадающих списков (Пружинка) */
+/* Анимация выпадающих списков (Пружинка) */
 .custom-dropdown-menu {
     border-radius: 16px !important;
     overflow: hidden;
@@ -90,7 +105,7 @@ body {
     color: white;
 }
 
-/* Анимация появления модального окна */
+/* Анимация появления модальных окон */
 .modal.fade .modal-dialog {
     transition: transform 0.3s ease-out;
     transform: scale(0.8);
@@ -100,11 +115,11 @@ body {
 }
 
 /* ------------------------------------------- */
-/* Стилизация таблицы и шапки                  */
+/* Стилизация таблицы                          */
 /* ------------------------------------------- */
 .table-hover tbody tr:hover {
     cursor: pointer;
-    background-color: rgba(197, 168, 97, 0.05); /* Легкий золотой оттенок при наведении */
+    background-color: rgba(197, 168, 97, 0.05); 
 }
 .custom-thead th {
     background-color: #f8f9fa;
@@ -114,13 +129,13 @@ body {
     padding-bottom: 16px;
 }
 
-/* Кастомные цвета для бейджей новых статусов */
+/* Кастомные цвета для бейджей статусов */
 .badge { border-radius: 10px; padding: 6px 10px; font-weight: 600; }
-.badge-custom-0 { background-color: #8e44ad; color: #fff; } /* Фиолетовый */
-.badge-custom-1 { background-color: #e67e22; color: #fff; } /* Оранжевый */
-.badge-custom-2 { background-color: #16a085; color: #fff; } /* Бирюзовый */
-.badge-custom-3 { background-color: #2980b9; color: #fff; } /* Синий */
-.badge-custom-4 { background-color: #e84393; color: #fff; } /* Розовый */
+.badge-custom-0 { background-color: #8e44ad; color: #fff; } 
+.badge-custom-1 { background-color: #e67e22; color: #fff; } 
+.badge-custom-2 { background-color: #16a085; color: #fff; } 
+.badge-custom-3 { background-color: #2980b9; color: #fff; } 
+.badge-custom-4 { background-color: #e84393; color: #fff; } 
 
 /* ------------------------------------------- */
 /* Адаптация под ТЁМНУЮ ТЕМУ                   */
